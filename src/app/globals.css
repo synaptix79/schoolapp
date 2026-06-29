@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Shadcn semantic tokens — paleta celeste / azul / blanco */
+  --background: 211 85% 98%;         /* #F4F9FE — fondo general */
+  --foreground: 209 58% 18%;         /* #14304A — texto principal */
+  --card: 0 0% 100%;                 /* #FFFFFF — superficies / tarjetas */
+  --card-foreground: 209 58% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 209 58% 18%;
+  --primary: 207 73% 41%;            /* #1C6FB3 — azul primario */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 206 84% 95%;          /* #E8F4FD — celeste-suave */
+  --secondary-foreground: 207 73% 41%;
+  --muted: 208 59% 91%;              /* #DCEAF6 — hover / fondos atenuados */
+  --muted-foreground: 209 22% 45%;   /* #5A748C — texto secundario */
+  --accent: 206 84% 95%;             /* #E8F4FD — chips / badges / tarjetas activas */
+  --accent-foreground: 207 73% 41%;
+  --destructive: 38 93% 55%;         /* #F6A623 — alerta / pendiente */
+  --destructive-foreground: 209 58% 18%;
+  --border: 208 59% 91%;             /* #DCEAF6 — bordes sutiles */
+  --input: 208 59% 91%;
+  --ring: 204 79% 54%;               /* #2E9BE6 — celeste (foco) */
+  --radius: 0.5rem;
+
+  /* Tokens extendidos para uso directo en CSS y componentes */
+  --azul-primario: #1C6FB3;
+  --azul-primario-rgb: 28 111 179;
+  --celeste: #2E9BE6;
+  --celeste-rgb: 46 155 230;
+  --celeste-claro: #5CB8F0;
+  --celeste-claro-rgb: 92 184 240;
+  --celeste-suave: #E8F4FD;
+  --celeste-suave-rgb: 232 244 253;
+  --blanco: #FFFFFF;
+  --blanco-rgb: 255 255 255;
+  --fondo: #F4F9FE;
+  --fondo-rgb: 244 249 254;
+  --texto: #14304A;
+  --texto-rgb: 20 48 74;
+  --texto-suave: #5A748C;
+  --texto-suave-rgb: 90 116 140;
+  --borde: #DCEAF6;
+  --borde-rgb: 220 234 246;
+  --alerta: #F6A623;
+  --alerta-rgb: 246 166 35;
+  --alerta-suave: #FFF6E8;
+  --alerta-suave-rgb: 255 246 232;
+  --shadow-soft: 0 14px 36px -28px color-mix(in srgb, var(--azul-primario) 22%, transparent);
+  --shadow-panel: 0 22px 64px -46px color-mix(in srgb, var(--azul-primario) 32%, transparent);
+}
+
+* {
+  border-color: hsl(var(--border));
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  text-rendering: geometricPrecision;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--fondo);
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans), sans-serif;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--celeste) 20%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

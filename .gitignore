@@ -1,0 +1,10 @@
+.next
+node_modules
+out
+coverage
+.env.local
+.env.*.local
+supabase/.temp
+supabase/.branches
+.codex-*
+tsconfig.tsbuildinfo
