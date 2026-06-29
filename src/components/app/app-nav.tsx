@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
 
 import type { NavItem, RolActivo } from '@/lib/roles';
 import { navItemsMap, roleMeta } from '@/lib/roles';
@@ -25,14 +24,13 @@ export function AppNav({ rolActivo }: { rolActivo: RolActivo }) {
           {items.map((item, i) => {
             const active = isActivePath(pathname, item.href);
             return (
-              <motion.div
+              <div
                 key={`${rolActivo}-${item.href}`}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.14, delay: i * 0.04, ease: 'easeOut' }}
+                className="animate-nav-slide"
+                style={{ animationDelay: `${i * 40}ms` }}
               >
                 <SidebarItem item={item} active={active} activeStyle={navActiveStyle} />
-              </motion.div>
+              </div>
             );
           })}
         </nav>
@@ -48,11 +46,10 @@ export function AppNav({ rolActivo }: { rolActivo: RolActivo }) {
             const Icon = item.icon;
             const active = isActivePath(pathname, item.href);
             return (
-              <motion.div
+              <div
                 key={`${rolActivo}-${item.href}`}
-                initial={{ opacity: 0, scale: 0.88 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.12, delay: i * 0.04, ease: 'easeOut' }}
+                className="animate-nav-pop"
+                style={{ animationDelay: `${i * 40}ms` }}
               >
                 <Link
                   href={item.href}
@@ -65,7 +62,7 @@ export function AppNav({ rolActivo }: { rolActivo: RolActivo }) {
                   <Icon className="size-4" aria-hidden />
                   <span className="w-full truncate text-center">{item.label}</span>
                 </Link>
-              </motion.div>
+              </div>
             );
           })}
         </div>

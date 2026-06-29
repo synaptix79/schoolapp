@@ -73,6 +73,63 @@ body {
   background: color-mix(in srgb, var(--celeste) 20%, transparent);
 }
 
+.animate-nav-slide,
+.animate-nav-pop {
+  animation-duration: 140ms;
+  animation-fill-mode: both;
+  animation-timing-function: ease-out;
+}
+
+.animate-nav-slide {
+  animation-name: nav-slide-in;
+}
+
+.animate-nav-pop {
+  animation-name: nav-pop-in;
+}
+
+.animate-like-pop {
+  animation: like-pop 220ms ease-out;
+}
+
+@keyframes nav-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes nav-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes like-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  55% {
+    transform: scale(1.35);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

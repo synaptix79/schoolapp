@@ -1,9 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Loader2, LockKeyhole, Mail } from 'lucide-react';
 
@@ -12,33 +9,34 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createClient } from '@/lib/supabase/client';
 
-const loginSchema = z.object({
-  email: z.string().email('Ingresa un correo válido'),
-  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres')
-});
+type LoginValues = {
+  email: string;
+  password: string;
+};
 
-type LoginValues = z.infer<typeof loginSchema>;
+type LoginErrors = Partial<Record<keyof LoginValues, string>>;
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<LoginErrors>({});
   const [pending, setPending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<LoginValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: ''
-    }
-  });
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-  async function onSubmit(values: LoginValues) {
+    const formData = new FormData(event.currentTarget);
+    const values: LoginValues = {
+      email: String(formData.get('email') ?? '').trim(),
+      password: String(formData.get('password') ?? '')
+    };
+    const nextErrors = validateLogin(values);
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     setPending(true);
     setServerError(null);
 
@@ -61,7 +59,7 @@ export function LoginForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <form className="space-y-4" onSubmit={onSubmit} noValidate>
       <div className="space-y-2">
         <Label htmlFor="email">Correo electrónico</Label>
         <div className="relative">
@@ -70,16 +68,16 @@ export function LoginForm() {
             id="email"
             type="email"
             autoComplete="email"
+            name="email"
             placeholder="nombre@canaan.edu.py"
             className="pl-10"
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'email-error' : undefined}
-            {...register('email')}
           />
         </div>
         {errors.email ? (
           <p id="email-error" className="text-sm font-medium text-canaan-alerta">
-            {errors.email.message}
+            {errors.email}
           </p>
         ) : null}
       </div>
@@ -92,11 +90,11 @@ export function LoginForm() {
             id="password"
             type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
+            name="password"
             placeholder="Tu contraseña"
             className="px-10"
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? 'password-error' : undefined}
-            {...register('password')}
           />
           <button
             type="button"
@@ -109,7 +107,7 @@ export function LoginForm() {
         </div>
         {errors.password ? (
           <p id="password-error" className="text-sm font-medium text-canaan-alerta">
-            {errors.password.message}
+            {errors.password}
           </p>
         ) : null}
       </div>
@@ -126,4 +124,18 @@ export function LoginForm() {
       </Button>
     </form>
   );
+}
+
+function validateLogin(values: LoginValues): LoginErrors {
+  const errors: LoginErrors = {};
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+    errors.email = 'Ingresa un correo válido';
+  }
+
+  if (values.password.length < 6) {
+    errors.password = 'La contraseña debe tener al menos 6 caracteres';
+  }
+
+  return errors;
 }

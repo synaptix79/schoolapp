@@ -1,8 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
-import { z } from 'zod';
-import * as XLSX from 'xlsx';
+import { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Download, FileSpreadsheet, Upload } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -33,6 +31,13 @@ type ImportSummary = {
   skipped: number;
 };
 
+type ValidatorTools = {
+  isNivel: (value: string) => boolean;
+  isParentesco: (value: string) => boolean;
+  isEstadoAsistencia: (value: string) => boolean;
+  isEmail: (value: string) => boolean;
+};
+
 type BulkImporterProps = {
   kind: ImportKind;
   title: string;
@@ -41,10 +46,6 @@ type BulkImporterProps = {
   allowedRole: 'direccion' | 'docente';
   teacherGrades?: string[];
 };
-
-const nivelSchema = z.enum(['Inicial', 'EEB', 'Medio']);
-const parentescoSchema = z.enum(['madre', 'padre', 'tutor']);
-const estadoAsistenciaSchema = z.enum(['presente', 'ausente', 'justificado', 'tarde']);
 
 const gradoColumns: ColumnDef[] = [
   { key: 'nivel', label: 'nivel', example: 'EEB' },
@@ -108,19 +109,41 @@ export function BulkImporter({
   const [selectedGrade, setSelectedGrade] = useState(teacherGrades[0] ?? '3.º EEB A');
   const [selectedDate, setSelectedDate] = useState(demoToday);
   const [savedKeys, setSavedKeys] = useState<Set<string>>(() => new Set(getInitialExistingKeys(kind, selectedGrade, selectedDate)));
+  const [validatedRows, setValidatedRows] = useState<ValidatedRow[]>([]);
+  const [isValidating, setIsValidating] = useState(false);
   const [summary, setSummary] = useState<ImportSummary | null>(null);
 
   const columns = getColumns(kind);
-  const validatedRows = useMemo(
-    () => validateRows(kind, rows, { createMissingGrades, selectedGrade, selectedDate }),
-    [kind, rows, createMissingGrades, selectedGrade, selectedDate]
-  );
   const validCount = validatedRows.filter((row) => row.valid).length;
   const errorCount = validatedRows.length - validCount;
   const invalidRows = validatedRows.filter((row) => !row.valid);
-  const canConfirm = validCount > 0;
+  const canConfirm = validCount > 0 && !isValidating;
 
-  function downloadTemplate() {
+  useEffect(() => {
+    let active = true;
+
+    if (rows.length === 0) {
+      setValidatedRows([]);
+      setIsValidating(false);
+      return;
+    }
+
+    setIsValidating(true);
+    void validateRows(kind, rows, { createMissingGrades, selectedGrade, selectedDate })
+      .then((nextRows) => {
+        if (active) setValidatedRows(nextRows);
+      })
+      .finally(() => {
+        if (active) setIsValidating(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [kind, rows, createMissingGrades, selectedGrade, selectedDate]);
+
+  async function downloadTemplate() {
+    const XLSX = await loadXlsx();
     const templateRow = Object.fromEntries(columns.map((column) => [column.key, column.example]));
     const worksheet = XLSX.utils.json_to_sheet([templateRow], { header: columns.map((column) => column.key) });
     const workbook = XLSX.utils.book_new();
@@ -136,6 +159,7 @@ export function BulkImporter({
     setFileName(file.name);
 
     try {
+      const XLSX = await loadXlsx();
       const buffer = await file.arrayBuffer();
       const workbook = XLSX.read(buffer, { type: 'array', cellDates: false });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -184,8 +208,9 @@ export function BulkImporter({
     setSummary(result);
   }
 
-  function downloadErrorReport() {
+  async function downloadErrorReport() {
     if (!invalidRows.length) return;
+    const XLSX = await loadXlsx();
 
     const reportRows = invalidRows.map((row) => ({
       fila: row.rowNumber,
@@ -215,7 +240,7 @@ export function BulkImporter({
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={downloadTemplate}
+            onClick={() => void downloadTemplate()}
             className="inline-flex h-10 items-center gap-2 rounded-md border border-border bg-card px-3 text-sm font-semibold text-primary transition-colors hover:bg-muted"
           >
             <Download className="size-4" aria-hidden />
@@ -289,8 +314,8 @@ export function BulkImporter({
       )}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <StatusCard icon={CheckCircle2} label="Listas" value={validCount} tone="ready" />
-        <StatusCard icon={AlertTriangle} label="Con error" value={errorCount} tone="error" />
+        <StatusCard icon={CheckCircle2} label="Listas" value={isValidating ? 'Validando' : validCount} tone="ready" />
+        <StatusCard icon={AlertTriangle} label="Con error" value={isValidating ? '...' : errorCount} tone="error" />
         <StatusCard icon={FileSpreadsheet} label="Archivo" value={fileName ? 'Cargado' : 'Pendiente'} detail={fileName ?? 'Usá la plantilla oficial'} />
       </div>
 
@@ -377,7 +402,7 @@ export function BulkImporter({
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={downloadErrorReport}
+                onClick={() => void downloadErrorReport()}
                 disabled={invalidRows.length === 0}
                 className="inline-flex h-10 items-center gap-2 rounded-md border border-border bg-card px-3 text-sm font-semibold text-primary transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-45"
               >
@@ -466,11 +491,12 @@ function stringifyValue(value: unknown) {
   return String(value).trim();
 }
 
-function validateRows(
+async function validateRows(
   kind: ImportKind,
   rows: ImportRecord[],
   options: { createMissingGrades: boolean; selectedGrade: string; selectedDate: string }
-): ValidatedRow[] {
+): Promise<ValidatedRow[]> {
+  const validators = await loadValidators();
   const duplicateTracker = new Map<string, number>();
 
   return rows.map((row, index) => {
@@ -479,11 +505,11 @@ function validateRows(
     let dedupKey: string | null = null;
 
     if (kind === 'grados') {
-      dedupKey = validateGradeRow(base, errors);
+      dedupKey = validateGradeRow(base, errors, validators);
     } else if (kind === 'alumnos') {
-      dedupKey = validateStudentRow(base, errors, options.createMissingGrades);
+      dedupKey = validateStudentRow(base, errors, options.createMissingGrades, validators);
     } else {
-      dedupKey = validateAttendanceRow(base, errors, options.selectedGrade, options.selectedDate);
+      dedupKey = validateAttendanceRow(base, errors, options.selectedGrade, options.selectedDate, validators);
     }
 
     if (dedupKey) {
@@ -505,13 +531,13 @@ function validateRows(
   });
 }
 
-function validateGradeRow(row: ImportRecord, errors: RowErrors) {
+function validateGradeRow(row: ImportRecord, errors: RowErrors, validators: ValidatorTools) {
   const nivel = row.nivel;
   const grado = row.grado;
   const seccion = row.seccion;
   const anio = row.anio_lectivo;
 
-  if (!nivelSchema.safeParse(nivel).success) errors.nivel = 'Debe ser Inicial, EEB o Medio.';
+  if (!validators.isNivel(nivel)) errors.nivel = 'Debe ser Inicial, EEB o Medio.';
   if (!grado) errors.grado = 'Campo obligatorio.';
   if (!seccion) errors.seccion = 'Campo obligatorio.';
   if (!isValidSchoolYear(anio)) errors.anio_lectivo = 'Debe ser un año válido, ej. 2026.';
@@ -519,7 +545,12 @@ function validateGradeRow(row: ImportRecord, errors: RowErrors) {
   return grado && seccion && anio ? gradeKey(grado, seccion, anio) : null;
 }
 
-function validateStudentRow(row: ImportRecord, errors: RowErrors, createMissingGrades: boolean) {
+function validateStudentRow(
+  row: ImportRecord,
+  errors: RowErrors,
+  createMissingGrades: boolean,
+  validators: ValidatorTools
+) {
   const ci = normalizeCi(row.ci);
   const grado = row.grado;
   const seccion = row.seccion;
@@ -531,8 +562,8 @@ function validateStudentRow(row: ImportRecord, errors: RowErrors, createMissingG
   if (!grado) errors.grado = 'Campo obligatorio.';
   if (!seccion) errors.seccion = 'Campo obligatorio.';
   if (!isValidSchoolYear(anio)) errors.anio_lectivo = 'Debe ser un año válido, ej. 2026.';
-  if (row.tutor_email && !z.string().email().safeParse(row.tutor_email).success) errors.tutor_email = 'Email inválido.';
-  if (row.parentesco && !parentescoSchema.safeParse(row.parentesco.toLowerCase()).success) errors.parentesco = 'Debe ser madre, padre o tutor.';
+  if (row.tutor_email && !validators.isEmail(row.tutor_email)) errors.tutor_email = 'Email inválido.';
+  if (row.parentesco && !validators.isParentesco(row.parentesco.toLowerCase())) errors.parentesco = 'Debe ser madre, padre o tutor.';
 
   if (grado && seccion && anio && !createMissingGrades && !existingGradeKeys.has(gradeKey(grado, seccion, anio))) {
     errors.grado = 'El grado/sección/año no existe.';
@@ -541,7 +572,13 @@ function validateStudentRow(row: ImportRecord, errors: RowErrors, createMissingG
   return ci || null;
 }
 
-function validateAttendanceRow(row: ImportRecord, errors: RowErrors, selectedGrade: string, selectedDate: string) {
+function validateAttendanceRow(
+  row: ImportRecord,
+  errors: RowErrors,
+  selectedGrade: string,
+  selectedDate: string,
+  validators: ValidatorTools
+) {
   const roster = attendanceRosterByGrade[selectedGrade] ?? [];
   const ci = normalizeCi(row.ci);
   const name = normalizeText(row.nombre_completo);
@@ -550,7 +587,7 @@ function validateAttendanceRow(row: ImportRecord, errors: RowErrors, selectedGra
 
   if (!ci && !row.nombre_completo) errors.ci = 'Indicá ci o nombre_completo.';
   if (!matchedStudent) errors.ci = 'No pertenece al grado seleccionado.';
-  if (!estadoAsistenciaSchema.safeParse(row.estado.toLowerCase()).success) {
+  if (!validators.isEstadoAsistencia(row.estado.toLowerCase())) {
     errors.estado = 'Debe ser presente, ausente, justificado o tarde.';
   }
 
@@ -592,4 +629,28 @@ function isValidDate(value: string) {
   const [day, month, year] = value.split('/').map(Number);
   const date = new Date(year, month - 1, day);
   return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+}
+
+let validatorsPromise: Promise<ValidatorTools> | null = null;
+
+function loadValidators() {
+  validatorsPromise ??= import('zod').then(({ z }) => {
+    const nivelSchema = z.enum(['Inicial', 'EEB', 'Medio']);
+    const parentescoSchema = z.enum(['madre', 'padre', 'tutor']);
+    const estadoAsistenciaSchema = z.enum(['presente', 'ausente', 'justificado', 'tarde']);
+    const emailSchema = z.string().email();
+
+    return {
+      isNivel: (value: string) => nivelSchema.safeParse(value).success,
+      isParentesco: (value: string) => parentescoSchema.safeParse(value).success,
+      isEstadoAsistencia: (value: string) => estadoAsistenciaSchema.safeParse(value).success,
+      isEmail: (value: string) => emailSchema.safeParse(value).success,
+    };
+  });
+
+  return validatorsPromise;
+}
+
+function loadXlsx() {
+  return import('xlsx');
 }

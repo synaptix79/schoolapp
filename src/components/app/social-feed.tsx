@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { memo, useMemo, useState } from 'react';
 import {
   CalendarPlus,
   Check,
@@ -401,7 +400,7 @@ function SocialFeed({ posts, role, avatarClass }: { posts: Post[]; role: DemoWal
   );
 }
 
-function SocialPost({ post, role, avatarClass }: { post: Post; role: DemoWallRole; avatarClass: string }) {
+const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post: Post; role: DemoWallRole; avatarClass: string }) {
   const [liked, setLiked] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const reactionCount = post.reactions + (liked ? 1 : 0);
@@ -461,9 +460,9 @@ function SocialPost({ post, role, avatarClass }: { post: Post; role: DemoWallRol
                 liked ? 'bg-accent text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
             >
-              <motion.span animate={liked ? { scale: [1, 1.35, 1] } : { scale: 1 }} transition={{ duration: 0.22 }}>
+              <span className={cn('inline-flex', liked && 'animate-like-pop')}>
                 <Heart className={cn('size-5', liked && 'fill-current')} aria-hidden />
-              </motion.span>
+              </span>
               {reactionCount}
             </button>
           ) : (
@@ -527,7 +526,7 @@ function SocialPost({ post, role, avatarClass }: { post: Post; role: DemoWallRol
       </footer>
     </article>
   );
-}
+});
 
 function PostImage({ variant, title }: { variant: string; title: string }) {
   const label = imageLabel(variant);
