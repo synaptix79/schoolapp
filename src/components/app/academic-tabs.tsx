@@ -119,23 +119,25 @@ export function AcademicTabs({
     <div className="rounded-xl border border-border bg-card shadow-soft">
       {/* Tab bar */}
       <div className="border-b border-border px-1 pt-1">
-        <div className="flex overflow-x-auto">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
+                type="button"
+                aria-pressed={active}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  'flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-semibold transition-colors',
+                  'flex min-h-12 min-w-0 flex-col items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-center text-sm font-semibold leading-tight transition-colors sm:flex-row sm:px-4',
                   active
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground'
                 )}
               >
-                <Icon className="size-4" aria-hidden />
-                {tab.label}
+                <Icon className="size-4 shrink-0" aria-hidden />
+                <span className="break-words">{tab.label}</span>
                 {tab.id === 'recordatorios' && upcomingCount > 0 && (
                   <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold leading-none text-primary">
                     {upcomingCount}
@@ -148,7 +150,7 @@ export function AcademicTabs({
       </div>
 
       {/* Tab content */}
-      <div className="p-5">
+      <div className="min-w-0 p-3 sm:p-5">
         {activeTab === 'notas'          && <NotasContent notas={notasDiarias} />}
         {activeTab === 'calificaciones' && <CalificacionesContent calificaciones={calificaciones} />}
         {activeTab === 'boletin'        && <BoletinContent boletines={boletinSemanal} />}
@@ -220,8 +222,8 @@ function CalificacionesContent({ calificaciones }: { calificaciones: Calificacio
 
   return (
     <div className="overflow-hidden rounded-lg border border-border">
-      <table className="w-full text-sm">
-        <thead className="bg-muted/40">
+      <table className="block w-full text-sm sm:table">
+        <thead className="sr-only bg-muted/40 sm:not-sr-only sm:table-header-group">
           <tr>
             {['Materia', 'Período', 'Nota', 'Observación'].map((col) => (
               <th key={col} className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-muted-foreground">
@@ -230,12 +232,12 @@ function CalificacionesContent({ calificaciones }: { calificaciones: Calificacio
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
+        <tbody className="block divide-y divide-border sm:table-row-group">
           {calificaciones.map((cal, i) => (
-            <tr key={i} className="transition-colors hover:bg-muted/30">
-              <td className="px-4 py-3 font-semibold text-foreground">{cal.materia}</td>
-              <td className="px-4 py-3 text-muted-foreground">{cal.periodo}</td>
-              <td className="px-4 py-3">
+            <tr key={i} className="block p-3 transition-colors hover:bg-muted/30 sm:table-row sm:p-0">
+              <td className="block py-1 font-semibold text-foreground before:mr-2 before:text-xs before:font-bold before:text-muted-foreground before:content-['Materia:'] sm:table-cell sm:px-4 sm:py-3 sm:before:content-none">{cal.materia}</td>
+              <td className="block py-1 text-muted-foreground before:mr-2 before:text-xs before:font-bold before:content-['Período:'] sm:table-cell sm:px-4 sm:py-3 sm:before:content-none">{cal.periodo}</td>
+              <td className="block py-1 before:mr-2 before:text-xs before:font-bold before:text-muted-foreground before:content-['Nota:'] sm:table-cell sm:px-4 sm:py-3 sm:before:content-none">
                 <span
                   className={cn(
                     'inline-flex h-8 w-12 items-center justify-center rounded-md text-base font-bold',
@@ -249,7 +251,7 @@ function CalificacionesContent({ calificaciones }: { calificaciones: Calificacio
                   {cal.nota}
                 </span>
               </td>
-              <td className="px-4 py-3 text-muted-foreground">{cal.observacion}</td>
+              <td className="block break-words py-1 text-muted-foreground before:mr-2 before:text-xs before:font-bold before:content-['Observación:'] sm:table-cell sm:px-4 sm:py-3 sm:before:content-none">{cal.observacion}</td>
             </tr>
           ))}
         </tbody>

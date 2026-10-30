@@ -117,9 +117,9 @@ export function QuickLink({ href, label, description, icon: Icon }: { href: stri
 export function DemoTable({ columns, rows }: { columns: string[]; rows: Array<Array<ReactNode>> }) {
   return (
     <div className="min-w-0 max-w-full overflow-hidden rounded-lg border border-border bg-card">
-      <div className="max-w-full overflow-x-auto">
-        <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="bg-muted/70 text-xs uppercase text-muted-foreground">
+      <div className="max-w-full">
+        <table className="block w-full text-left text-sm md:table">
+          <thead className="sr-only bg-muted/70 text-xs uppercase text-muted-foreground md:not-sr-only md:table-header-group">
             <tr>
               {columns.map((column) => (
                 <th key={column} className="px-4 py-3 font-bold">
@@ -128,11 +128,12 @@ export function DemoTable({ columns, rows }: { columns: string[]; rows: Array<Ar
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody className="block divide-y divide-border md:table-row-group">
             {rows.map((row, index) => (
-              <tr key={index} className="bg-card">
+              <tr key={index} className="block bg-card p-3 md:table-row md:p-0">
                 {row.map((cell, cellIndex) => (
-                  <td key={cellIndex} className="px-4 py-3 align-top text-foreground">
+                  <td key={cellIndex} className="block min-w-0 break-words py-1 align-top text-foreground md:table-cell md:px-4 md:py-3">
+                    <span aria-hidden className="mr-2 text-xs font-bold text-muted-foreground md:hidden">{columns[cellIndex]}:</span>
                     {cell}
                   </td>
                 ))}

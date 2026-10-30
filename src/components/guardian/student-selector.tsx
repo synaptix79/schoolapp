@@ -76,8 +76,8 @@ export function GuardianStudentSelector() {
       >
         <StudentAvatar name={selectedStudent.nombre} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-bold text-foreground">{selectedStudent.nombre}</span>
-          <span className="block truncate text-sm text-muted-foreground">
+          <span className="block break-words font-bold text-foreground">{selectedStudent.nombre}</span>
+          <span className="block break-words text-sm text-muted-foreground">
             {studentSubtitle(selectedStudent)}
           </span>
         </span>
@@ -113,8 +113,8 @@ export function GuardianStudentSelector() {
               >
                 <StudentAvatar name={student.nombre} />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-semibold text-foreground">{student.nombre}</span>
-                  <span className="block truncate text-xs text-muted-foreground">{studentSubtitle(student)}</span>
+                  <span className="block break-words font-semibold text-foreground">{student.nombre}</span>
+                  <span className="block break-words text-xs text-muted-foreground">{studentSubtitle(student)}</span>
                 </span>
                 {active ? <Check className="size-4 text-primary" aria-hidden /> : null}
               </button>

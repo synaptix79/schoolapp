@@ -335,28 +335,28 @@ export function BulkImporter({
         </div>
       ) : (
         <>
-          <div className="mt-5 overflow-x-auto rounded-lg border border-border">
-            <table className="min-w-[980px] w-full border-collapse bg-card text-sm">
-              <thead className="bg-accent text-left text-xs font-bold uppercase tracking-wide text-primary">
+          <div className="mt-5 min-w-0 rounded-lg border border-border">
+            <table className={cn('block w-full border-collapse bg-card text-sm', kind !== 'alumnos' && 'xl:table xl:table-fixed')}>
+              <thead className={cn('sr-only bg-accent text-left text-xs font-bold uppercase tracking-wide text-primary', kind !== 'alumnos' && 'xl:not-sr-only xl:table-header-group')}>
                 <tr>
                   <th className="w-20 px-3 py-3">Fila</th>
                   <th className="w-28 px-3 py-3">Estado</th>
                   {columns.map((column) => (
-                    <th key={column.key} className="min-w-40 px-3 py-3">{column.label}</th>
+                    <th key={column.key} className="break-all px-3 py-3">{column.label}</th>
                   ))}
-                  <th className="min-w-64 px-3 py-3">Motivo</th>
+                  <th className="px-3 py-3">Motivo</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className={cn('block divide-y divide-border', kind !== 'alumnos' && 'xl:table-row-group')}>
                 {validatedRows.map((row, rowIndex) => (
                   <tr
                     key={row.id}
                     className={cn(
-                      row.valid ? 'bg-emerald-50/80' : 'bg-canaan-alerta-suave/70'
+                      'block min-w-0 p-3', kind !== 'alumnos' && 'xl:table-row xl:p-0', row.valid ? 'bg-emerald-50/80' : 'bg-canaan-alerta-suave/70'
                     )}
                   >
-                    <td className="px-3 py-2 font-semibold text-muted-foreground">{row.rowNumber}</td>
-                    <td className="px-3 py-2">
+                    <td className={cn('block py-1 font-semibold text-muted-foreground', kind !== 'alumnos' && 'xl:table-cell xl:px-3 xl:py-2')}><span className={kind !== 'alumnos' ? 'xl:hidden' : undefined}>Fila </span>{row.rowNumber}</td>
+                    <td className={cn('block py-1', kind !== 'alumnos' && 'xl:table-cell xl:px-3 xl:py-2')}>
                       <span
                         className={cn(
                           'inline-flex rounded-full border px-2 py-1 text-xs font-bold',
@@ -369,8 +369,11 @@ export function BulkImporter({
                     {columns.map((column) => {
                       const hasError = Boolean(row.errors[column.key]);
                       return (
-                        <td key={column.key} className="px-3 py-2 align-top">
+                        <td key={column.key} className={cn('block min-w-0 py-1 align-top', kind !== 'alumnos' && 'xl:table-cell xl:px-3 xl:py-2')}>
+                          <label className={cn('mb-1 block text-xs font-semibold text-muted-foreground', kind !== 'alumnos' && 'xl:hidden')} htmlFor={`import-${kind}-${rowIndex}-${column.key}`}>{column.label}</label>
                           <input
+                            id={`import-${kind}-${rowIndex}-${column.key}`}
+                            aria-label={`${column.label}, fila ${row.rowNumber}`}
                             value={row.data[column.key] ?? ''}
                             onChange={(event) => updateCell(rowIndex, column.key, event.target.value)}
                             className={cn(
@@ -382,7 +385,7 @@ export function BulkImporter({
                         </td>
                       );
                     })}
-                    <td className="px-3 py-2 align-top text-xs leading-5 text-muted-foreground">
+                    <td className={cn('block break-words py-1 align-top text-xs leading-5 text-muted-foreground', kind !== 'alumnos' && 'xl:table-cell xl:px-3 xl:py-2')}>
                       {row.valid ? (
                         <span className="font-semibold text-emerald-700">Lista para confirmar</span>
                       ) : (

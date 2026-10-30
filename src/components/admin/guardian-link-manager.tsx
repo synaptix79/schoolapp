@@ -231,7 +231,7 @@ export function GuardianLinkManager() {
                 <UserRound className="size-4" aria-hidden />
               </span>
               <span className="min-w-0">
-                <span className="block truncate font-semibold text-foreground">{guardian.nombre_completo}</span>
+                <span className="block break-words font-semibold text-foreground">{guardian.nombre_completo}</span>
                 <span className="text-xs text-muted-foreground">{guardian.activo ? 'Cuenta activa' : 'Cuenta bloqueada'}</span>
               </span>
             </button>

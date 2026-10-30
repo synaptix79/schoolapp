@@ -271,14 +271,15 @@ export function CargaDocenteTabs() {
     <div className="rounded-lg border border-border bg-card shadow-soft">
 
       {/* ── Header: tab bar + grade selector ── */}
-      <div className="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between border-b border-border">
+      <div className="flex flex-col gap-0 xl:flex-row xl:items-center xl:justify-between border-b border-border">
         {/* Tabs */}
-        <div className="flex overflow-x-auto">
+        <div className="grid min-w-0 grid-cols-2 sm:flex sm:flex-wrap">
           {orderedTabs.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
               data-tab-id={id}
+              aria-pressed={activeTab === id}
               onClick={() => handleTabClick(id)}
               onPointerDown={(event) => handleTabPointerDown(event, id)}
               onPointerMove={handleTabPointerMove}
@@ -286,27 +287,27 @@ export function CargaDocenteTabs() {
               onPointerCancel={handleTabPointerEnd}
               style={{ touchAction: 'none' }}
               className={cn(
-                'flex shrink-0 items-center gap-2 border-b-2 px-4 py-3.5 text-sm font-semibold transition-colors',
+                'flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 border-b-2 px-2 py-3 text-center text-sm font-semibold leading-tight transition-colors sm:flex-row sm:gap-2 sm:px-4',
                 activeTab === id
                   ? 'border-primary text-primary'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               )}
             >
-              <Icon className="size-4" aria-hidden />
-              {label}
+              <Icon className="size-4 shrink-0" aria-hidden />
+              <span className="break-words">{label}</span>
             </button>
           ))}
         </div>
 
         {/* Grade selector */}
-        <div className="flex items-center gap-2 border-t border-border px-4 py-2 sm:border-t-0">
+        <div className="flex min-w-0 items-center gap-2 border-t border-border px-4 py-2 xl:border-t-0">
           <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground whitespace-nowrap">
             Grado
           </label>
           <select
             value={selectedGrado}
             onChange={(e) => setSelectedGrado(e.target.value)}
-            className="h-8 rounded-md border border-input bg-card px-2 text-sm font-semibold text-foreground"
+            className="h-10 min-w-0 max-w-full rounded-md border border-input bg-card px-2 text-sm font-semibold text-foreground"
           >
             {GRADOS.map((g) => <option key={g} value={g}>{formatAcademicLabel(g)}</option>)}
           </select>
@@ -314,7 +315,7 @@ export function CargaDocenteTabs() {
       </div>
 
       {/* ── Tab content ── */}
-      <div className="p-5">
+      <div className="min-w-0 p-3 sm:p-5">
 
         {/* ════════════════════════════════════════ Tab 1: Calificaciones */}
         {activeTab === 'calificaciones' && (
@@ -354,8 +355,8 @@ export function CargaDocenteTabs() {
             </div>
 
             <div className="overflow-hidden rounded-lg border border-border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/40">
+              <table className="block w-full text-sm sm:table">
+                <thead className="sr-only bg-muted/40 sm:not-sr-only sm:table-header-group">
                   <tr>
                     {['Alumno', 'Nota', 'Observación'].map((col) => (
                       <th
@@ -367,21 +368,23 @@ export function CargaDocenteTabs() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="block divide-y divide-border sm:table-row-group">
                   {calRows.length > 0 ? (
                     calRows.map((row) => (
-                      <tr key={row.id} className="hover:bg-muted/20">
-                        <td className="px-4 py-3 font-medium text-foreground">{row.nombre}</td>
-                        <td className="px-4 py-3">
+                      <tr key={row.id} className="block p-3 hover:bg-muted/20 sm:table-row sm:p-0">
+                        <td className="block break-words py-1 font-medium text-foreground sm:table-cell sm:px-4 sm:py-3">{row.nombre}</td>
+                        <td className="block py-1 sm:table-cell sm:px-4 sm:py-3">
                           <input
+                            aria-label={`Nota de ${row.nombre}`}
                             className="h-9 w-20 rounded-md border border-input bg-card px-2 text-sm"
                             defaultValue={row.nota}
                             placeholder="—"
                           />
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="block py-1 sm:table-cell sm:px-4 sm:py-3">
                           <input
-                            className="h-9 w-full min-w-[200px] rounded-md border border-input bg-card px-2 text-sm"
+                            aria-label={`Observación de ${row.nombre}`}
+                            className="h-9 w-full min-w-0 rounded-md border border-input bg-card px-2 text-sm"
                             defaultValue={row.observacion}
                             placeholder="Observación opcional…"
                           />
@@ -389,8 +392,8 @@ export function CargaDocenteTabs() {
                       </tr>
                     ))
                   ) : (
-                    <tr>
-                      <td colSpan={3} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                    <tr className="block sm:table-row">
+                      <td colSpan={3} className="block px-4 py-8 text-center text-sm text-muted-foreground sm:table-cell">
                         Sin alumnos cargados para este grado en el demo.
                       </td>
                     </tr>

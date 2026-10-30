@@ -56,8 +56,8 @@ export default function ProfesorPerfilPage() {
         <h2 className="mb-4 text-base font-bold text-foreground">Grados asignados</h2>
         {grades.length > 0 ? (
           <div className="overflow-hidden rounded-lg border border-border">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/40">
+            <table className="block w-full text-sm sm:table">
+              <thead className="sr-only bg-muted/40 sm:not-sr-only sm:table-header-group">
                 <tr>
                   {['Grado', 'Sección', 'Año', 'Alumnos'].map((col) => (
                     <th key={col} className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-muted-foreground">
@@ -66,18 +66,18 @@ export default function ProfesorPerfilPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="block divide-y divide-border sm:table-row-group">
                 {grades.map((g, i) => (
-                  <tr key={i} className="transition-colors hover:bg-muted/30">
-                    <td className="px-4 py-3 font-semibold text-foreground">
+                  <tr key={i} className="block p-3 transition-colors hover:bg-muted/30 sm:table-row sm:p-0">
+                    <td className="block py-1 font-semibold text-foreground sm:table-cell sm:px-4 sm:py-3">
                       <span className="flex items-center gap-2">
                         <School className="size-4 text-primary" aria-hidden />
                         {formatAcademicLabel(g.grado)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{g.seccion}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{g.anioLectivo}</td>
-                    <td className="px-4 py-3 font-semibold text-foreground">{g.alumnos}</td>
+                    <td className="block py-1 text-muted-foreground sm:table-cell sm:px-4 sm:py-3"><span className="sm:hidden">Sección: </span>{g.seccion}</td>
+                    <td className="block py-1 text-muted-foreground sm:table-cell sm:px-4 sm:py-3"><span className="sm:hidden">Año: </span>{g.anioLectivo}</td>
+                    <td className="block py-1 font-semibold text-foreground sm:table-cell sm:px-4 sm:py-3"><span className="sm:hidden">Alumnos: </span>{g.alumnos}</td>
                   </tr>
                 ))}
               </tbody>
@@ -107,7 +107,7 @@ function ContactField({
       <Icon className="size-4 shrink-0 text-primary" aria-hidden />
       <div className="min-w-0">
         <dt className="text-xs text-muted-foreground">{label}</dt>
-        <dd className="truncate text-sm font-medium text-foreground">{value}</dd>
+        <dd className="break-words text-sm font-medium text-foreground">{value}</dd>
       </div>
     </div>
   );

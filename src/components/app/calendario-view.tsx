@@ -340,9 +340,9 @@ export function CalendarioView({
     <div className="space-y-4">
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 max-w-full items-center gap-2">
           <NavBtn onClick={prevPeriod} aria-label="Período anterior"><ChevronLeft className="size-4" aria-hidden /></NavBtn>
-          <h2 className="min-w-[200px] text-center text-base font-bold capitalize text-foreground">{periodLabel}</h2>
+          <h2 className="min-w-0 flex-1 text-center text-base font-bold capitalize text-foreground sm:min-w-[200px]">{periodLabel}</h2>
           <NavBtn onClick={nextPeriod} aria-label="Período siguiente"><ChevronRight className="size-4" aria-hidden /></NavBtn>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -681,8 +681,8 @@ function WeekGrid({
   const visibleDays = showWeekends ? weekDays : weekDays.filter(isBusinessDay);
 
   return (
-    <div className="overflow-x-auto">
-      <div className="grid min-w-[560px] divide-x divide-border" style={{ gridTemplateColumns: `repeat(${visibleDays.length}, minmax(0, 1fr))` }}>
+    <div className="min-w-0">
+      <div className="grid grid-cols-1 sm:grid-cols-[repeat(var(--day-count),minmax(0,1fr))]" style={{ '--day-count': visibleDays.length } as React.CSSProperties}>
         {visibleDays.map((day) => {
           const dayStr     = toStr(day);
           const isToday    = dayStr === todayStr;
@@ -693,10 +693,14 @@ function WeekGrid({
           return (
             <div
               key={dayStr}
+              role="button"
+              tabIndex={0}
+              aria-label={fechaLarga(dayStr)}
+              onKeyDown={(event) => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); onSelect(dayStr); } }}
               onClick={() => onSelect(dayStr)}
               onDoubleClick={() => onDayDoubleClick(dayStr)}
               className={cn(
-                'min-h-[200px] cursor-pointer p-2 transition-colors',
+                'min-w-0 cursor-pointer border-b border-border p-2 transition-colors sm:min-h-[200px] sm:border-b-0 sm:border-r',
                 isSelected ? 'bg-primary/10'                       :
                 isWeekend  ? 'bg-muted/20 hover:bg-muted/40'       :
                              'bg-card hover:bg-accent/40'

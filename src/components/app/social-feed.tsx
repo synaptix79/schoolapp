@@ -177,7 +177,7 @@ export function DemoRoleWall({
                 >
                   <Icon className="size-4 shrink-0 sm:mt-0.5 sm:size-5" aria-hidden />
                   <span className="min-w-0">
-                    <span className="block truncate text-xs font-black sm:text-base">{option.label}</span>
+                    <span className="block break-words text-xs font-black sm:text-base">{option.label}</span>
                     <span className="mt-1 hidden text-xs leading-5 opacity-80 md:block">{option.description}</span>
                   </span>
                 </button>
@@ -407,7 +407,7 @@ function SocialFeed({ posts, role, avatarClass }: { posts: Post[]; role: DemoWal
   return (
     <section className="space-y-3">
       <div className="rounded-lg border border-border bg-card p-3 shadow-soft">
-        <div className="flex gap-2 overflow-x-auto">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
           {filters.map((item) => {
             const active = filter === item.value;
 
@@ -415,9 +415,10 @@ function SocialFeed({ posts, role, avatarClass }: { posts: Post[]; role: DemoWal
               <button
                 key={item.value}
                 type="button"
+                aria-pressed={active}
                 onClick={() => setFilter(item.value)}
                 className={cn(
-                  'h-9 shrink-0 rounded-md border px-4 text-sm font-bold transition-colors',
+                  'min-h-11 min-w-0 rounded-md border px-4 text-sm font-bold transition-colors',
                   active ? 'border-primary bg-primary text-primary-foreground shadow-soft' : 'border-border bg-card text-foreground hover:bg-muted'
                 )}
               >
@@ -475,7 +476,7 @@ const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post:
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
-                <Link href={`/aviso/${post.id}`} className="block truncate font-bold text-foreground hover:text-primary">
+                <Link href={`/aviso/${post.id}`} className="block break-words font-bold text-foreground hover:text-primary">
                   {post.author}
                 </Link>
                 <div className="text-xs font-medium text-muted-foreground" title={post.exactTime}>
