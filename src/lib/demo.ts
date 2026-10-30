@@ -1,6 +1,7 @@
 import type { Role, Profile } from '@/lib/auth';
 
 export const demoToday = '2026-06-27';
+const demoSchoolId = '00000000-0000-4000-8000-000000000001';
 
 export const demoProfiles: Record<Role, Profile> = {
   admin: {
@@ -9,7 +10,8 @@ export const demoProfiles: Record<Role, Profile> = {
     nombre_completo: 'Dirección Canaán',
     telefono: '+595 981 000 001',
     avatar_url: null,
-    activo: true
+    activo: true,
+    school_id: demoSchoolId
   },
   profesor: {
     id: 'demo-profesor',
@@ -17,7 +19,17 @@ export const demoProfiles: Record<Role, Profile> = {
     nombre_completo: 'Prof. Marta Benítez',
     telefono: '+595 981 000 002',
     avatar_url: null,
-    activo: true
+    activo: true,
+    school_id: demoSchoolId
+  },
+  padre_encargado: {
+    id: 'demo-padre-encargado',
+    rol: 'padre_encargado',
+    nombre_completo: 'Juan López',
+    telefono: '+595 981 000 003',
+    avatar_url: null,
+    activo: true,
+    school_id: demoSchoolId
   },
   padre: {
     id: 'demo-padre',
@@ -25,7 +37,8 @@ export const demoProfiles: Record<Role, Profile> = {
     nombre_completo: 'Juan López',
     telefono: '+595 981 000 003',
     avatar_url: null,
-    activo: true
+    activo: true,
+    school_id: demoSchoolId
   }
 };
 

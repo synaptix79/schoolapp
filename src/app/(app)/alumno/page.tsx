@@ -55,9 +55,9 @@ const usefulInfo = [
 ];
 
 const quickLinks: Array<{ href: string; label: string; icon: LucideIcon }> = [
-  { href: '/padre/alumno-1/calificaciones', label: 'Notas completas', icon: FileText },
-  { href: '/padre/calendario', label: 'Calendario', icon: CalendarDays },
-  { href: '/padre/alumno-1/perfil', label: 'Ficha del alumno', icon: UserRound }
+  { href: '/alumno/alumno-1/calificaciones', label: 'Notas completas', icon: FileText },
+  { href: '/alumno/calendario', label: 'Calendario', icon: CalendarDays },
+  { href: '/alumno/alumno-1/perfil', label: 'Ficha del alumno', icon: UserRound }
 ];
 
 export default function AlumnoPage() {

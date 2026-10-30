@@ -9,7 +9,7 @@ import { roleHome, roleMeta } from '@/lib/roles';
 import type { RolActivo } from '@/lib/roles';
 import { cn } from '@/lib/utils';
 
-const ALL_ROLES: RolActivo[] = ['direccion', 'docente', 'alumno'];
+const ALL_ROLES: RolActivo[] = ['direccion', 'docente', 'alumno', 'encargado'];
 
 export function RoleSelector() {
   const { rolActivo, setRolActivo } = useRole();

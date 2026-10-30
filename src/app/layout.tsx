@@ -15,7 +15,11 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: 'Canaán Conecta',
-  description: 'Portal institucional para colegio, alumnos y docentes del Centro Educativo Cristiano Canaán.'
+  description: 'Portal institucional para colegio, alumnos y docentes del Centro Educativo Cristiano Canaán.',
+  icons: {
+    icon: '/canaan-logo.jpeg',
+    apple: '/canaan-logo.jpeg'
+  }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -33,14 +33,58 @@ npm run dev
 2. Insertar o dejar que el trigger cree la fila en `public.profiles`.
 3. Asegurar que `rol = 'admin'` y `activo = true`.
 
-Ejemplo de metadata para registro inicial:
+Los roles y el colegio se toman de `app_metadata`, que solamente debe escribir el
+backend administrativo de Supabase. Nunca se deben aceptar desde el formulario
+del usuario.
 
 ```json
 {
-  "rol": "admin",
-  "nombre_completo": "Dirección Canaán",
-  "telefono": "+595..."
+  "app_metadata": {
+    "rol": "admin",
+    "school_id": "00000000-0000-4000-8000-000000000001"
+  },
+  "user_metadata": {
+    "nombre_completo": "Dirección Canaán",
+    "telefono": "+595..."
+  }
 }
+```
+
+## Rol Padre/Encargado
+
+El rol persistido es `padre_encargado`. La migración
+`0005_guardian_multistudent.sql`:
+
+- agrega aislamiento por `school_id`;
+- migra perfiles anteriores con rol `padre`;
+- crea `guardian_students` con relación muchos-a-muchos;
+- impide vínculos duplicados o entre colegios diferentes;
+- incorpora las tablas de asistencia, calificaciones, materias, horarios,
+  comunicados, pagos, documentos y notificaciones;
+- aplica RLS por alumno asignado y funciones de autorización para las APIs.
+
+Para habilitarlo:
+
+1. Configurar las variables de Supabase en `.env.local`.
+2. Vincular el proyecto con Supabase CLI y ejecutar `supabase db push`, o aplicar
+   las migraciones en orden desde el editor SQL.
+3. Crear la cuenta familiar con `app_metadata.rol = "padre_encargado"`.
+4. Ingresar como Dirección y abrir `/admin/vinculaciones`.
+5. Seleccionar el encargado, vincular uno o más alumnos y definir el tipo de
+   relación y el encargado principal.
+6. Iniciar sesión con la cuenta familiar. El selector superior cargará
+   exclusivamente los alumnos activos autorizados.
+
+Las rutas `/api/guardian/**` no usan datos demo. Si Supabase no está
+configurado, responden `503` y la interfaz muestra un estado de configuración
+pendiente sin exponer información académica.
+
+## Pruebas
+
+```bash
+npm test
+npm run lint
+npx tsc --noEmit --incremental false
 ```
 
 ## Seguridad de fotos de menores

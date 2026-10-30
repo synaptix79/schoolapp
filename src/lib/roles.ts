@@ -4,16 +4,18 @@ import {
   FileImage,
   FileText,
   GraduationCap,
+  HeartHandshake,
   Home,
   Megaphone,
   School,
   ShieldCheck,
+  UserCheck,
   UserRound,
   Users,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-export type RolActivo = 'direccion' | 'docente' | 'alumno';
+export type RolActivo = 'direccion' | 'docente' | 'alumno' | 'encargado';
 
 export type NavItem = {
   href: string;
@@ -24,7 +26,8 @@ export type NavItem = {
 export const roleHome: Record<RolActivo, string> = {
   direccion: '/admin',
   docente: '/profesor',
-  alumno: '/padre',
+  alumno: '/alumno/muro',
+  encargado: '/padre',
 };
 
 export const roleMeta: Record<
@@ -73,6 +76,16 @@ export const roleMeta: Record<
     mobileActiveStyle:   'bg-accent text-primary',
     selectorActiveStyle: 'border-primary/40 bg-primary/10 text-primary',
   },
+  encargado: {
+    label: 'Padre/Encargado',
+    badge: 'Padre/Encargado',
+    name: 'Cuenta familiar',
+    description: 'Consulta únicamente a sus alumnos vinculados.',
+    Icon: HeartHandshake,
+    navActiveStyle:      'bg-accent text-primary',
+    mobileActiveStyle:   'bg-accent text-primary',
+    selectorActiveStyle: 'border-primary/40 bg-primary/10 text-primary',
+  },
 };
 
 export const navItemsMap: Record<RolActivo, NavItem[]> = {
@@ -81,23 +94,35 @@ export const navItemsMap: Record<RolActivo, NavItem[]> = {
     { href: '/admin/usuarios', label: 'Usuarios',     icon: Users        },
     { href: '/admin/alumnos',  label: 'Alumnos',      icon: GraduationCap},
     { href: '/admin/grados',   label: 'Grados',       icon: School       },
+    { href: '/admin/calendario', label: 'Calendario',  icon: CalendarDays },
     { href: '/admin/avisos',   label: 'Comunicados',  icon: Megaphone    },
     { href: '/admin/reportes', label: 'Reportes',     icon: FileText     },
+    { href: '/admin/vinculaciones', label: 'Vinculaciones', icon: HeartHandshake },
   ],
   docente: [
     { href: '/profesor',              label: 'Inicio',         icon: Home         },
     { href: '/profesor/mis-grados',   label: 'Mis grados',     icon: School       },
     { href: '/profesor/calificaciones', label: 'Académico', icon: ClipboardList },
-    { href: '/profesor/asistencia',   label: 'Asistencia',     icon: CalendarDays },
+    { href: '/profesor/calendario',   label: 'Calendario',     icon: CalendarDays },
+    { href: '/profesor/asistencia',   label: 'Asistencia',     icon: UserCheck    },
     { href: '/profesor/galeria',      label: 'Entregables',    icon: FileImage    },
     { href: '/profesor/perfil',       label: 'Mi Perfil',      icon: UserRound    },
   ],
   alumno: [
-    { href: '/padre',                       label: 'Muro',       icon: Home         },
-    { href: '/padre/calendario',            label: 'Calendario', icon: CalendarDays },
-    { href: '/padre/alumno-1/calificaciones', label: 'Académico', icon: FileText    },
-    { href: '/padre/alumno-1/galeria',      label: 'Entregables', icon: FileImage   },
-    { href: '/padre/alumno-1/perfil',       label: 'Mi Perfil',  icon: UserRound    },
+    { href: '/alumno/muro',                       label: 'Muro',        icon: Home         },
+    { href: '/alumno/calendario',                 label: 'Calendario',  icon: CalendarDays },
+    { href: '/alumno/alumno-1/calificaciones',    label: 'Académico',   icon: FileText     },
+    { href: '/alumno/alumno-1/galeria',           label: 'Entregables', icon: FileImage    },
+    { href: '/alumno/alumno-1/perfil',            label: 'Mi Perfil',   icon: UserRound    },
+  ],
+  encargado: [
+    { href: '/padre',            label: 'Muro',        icon: Home          },
+    { href: '/padre/calendario', label: 'Calendario',  icon: CalendarDays  },
+    { href: '/padre/academico',  label: 'Académico',   icon: FileText      },
+    { href: '/padre/agenda',     label: 'Entregables', icon: FileImage     },
+    { href: '/padre/perfil',     label: 'Mi Perfil',   icon: UserRound     },
+    { href: '/padre/pagos',      label: 'Pagos',       icon: ClipboardList },
+    { href: '/padre/documentos', label: 'Documentos',  icon: FileText      },
   ],
 };
 
@@ -105,5 +130,6 @@ export const navItemsMap: Record<RolActivo, NavItem[]> = {
 export const allowedPaths: Record<RolActivo, string[]> = {
   direccion: ['/admin', '/aviso', '/dashboard'],
   docente:   ['/profesor', '/aviso', '/dashboard'],
-  alumno:    ['/padre', '/alumno', '/aviso', '/dashboard'],
+  alumno:    ['/alumno', '/aviso', '/dashboard'],
+  encargado: ['/padre', '/aviso', '/dashboard'],
 };

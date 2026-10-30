@@ -11,7 +11,7 @@ interface RoleContextValue {
 }
 
 const STORAGE_KEY = 'canaan-rol';
-const VALID_ROLES: RolActivo[] = ['direccion', 'docente', 'alumno'];
+const VALID_ROLES: RolActivo[] = ['direccion', 'docente', 'alumno', 'encargado'];
 
 const RoleContext = createContext<RoleContextValue | null>(null);
 

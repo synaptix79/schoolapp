@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, CheckCircle2, GraduationCap, ShieldCheck, Users } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle2, ShieldCheck, Users } from 'lucide-react';
 
 import { Alert } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,8 +23,15 @@ export default function LoginPage() {
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-[1440px] flex-col justify-center gap-6">
         <header className="flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-            <span className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-canaan-primary to-canaan-celeste text-primary-foreground shadow-soft">
-              <GraduationCap className="size-5" aria-hidden />
+            <span className="flex size-12 items-center justify-center overflow-hidden rounded-md border border-border bg-white shadow-soft">
+              <Image
+                src="/canaan-logo.jpeg"
+                alt="Logo del Centro Educativo Cristiano Canaán"
+                width={48}
+                height={48}
+                className="size-full object-contain"
+                priority
+              />
             </span>
             <span className="text-sm font-bold text-foreground">Canaán Conecta</span>
           </Link>

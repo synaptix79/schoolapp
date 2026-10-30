@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { GraduationCap } from 'lucide-react';
 
 export function AppHeader({
   badge,
@@ -16,8 +16,15 @@ export function AppHeader({
     <header className="sticky top-0 z-20 border-b border-border/80 bg-background/92 backdrop-blur">
       <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
         <Link href="/" className="flex min-w-0 items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-canaan-primary to-canaan-celeste text-primary-foreground shadow-soft">
-            <GraduationCap className="size-5" aria-hidden />
+          <span className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-white shadow-soft">
+            <Image
+              src="/canaan-logo.jpeg"
+              alt="Logo del Centro Educativo Cristiano Canaán"
+              width={48}
+              height={48}
+              className="size-full object-contain"
+              priority
+            />
           </span>
           <span className="min-w-0">
             <span className="block text-base font-bold text-foreground">Canaán Conecta</span>

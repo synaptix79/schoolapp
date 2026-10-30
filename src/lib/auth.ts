@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { hasSupabaseConfig } from '@/lib/config';
 import { createClient } from '@/lib/supabase/server';
 
-export type Role = 'admin' | 'profesor' | 'padre';
+export type Role = 'admin' | 'profesor' | 'padre_encargado' | 'padre';
 
 export type Profile = {
   id: string;
@@ -12,12 +12,14 @@ export type Profile = {
   telefono: string | null;
   avatar_url: string | null;
   activo: boolean;
+  school_id: string;
 };
 
 const roleRoutes: Record<Role, string> = {
   admin: '/admin',
   profesor: '/profesor',
-  padre: '/alumno'
+  padre_encargado: '/padre',
+  padre: '/padre'
 };
 
 export function getRoleRoute(role: Role) {
@@ -38,7 +40,7 @@ export async function getCurrentProfile() {
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('id, rol, nombre_completo, telefono, avatar_url, activo')
+    .select('id, rol, nombre_completo, telefono, avatar_url, activo, school_id')
     .eq('id', authData.user.id)
     .maybeSingle<Profile>();
 

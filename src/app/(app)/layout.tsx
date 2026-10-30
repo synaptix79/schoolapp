@@ -16,7 +16,8 @@ export default async function AppLayout({ children }: Readonly<{ children: React
   const rolMap: Record<string, RolActivo> = {
     admin: 'direccion',
     profesor: 'docente',
-    padre: 'alumno',
+    padre_encargado: 'encargado',
+    padre: 'encargado',
   };
   const rolActivo: RolActivo = rolMap[profile.rol] ?? 'direccion';
 
@@ -38,5 +39,6 @@ export default async function AppLayout({ children }: Readonly<{ children: React
 const roleLabel: Record<string, string> = {
   admin: 'Dirección',
   profesor: 'Docente',
-  padre: 'Alumno',
+  padre_encargado: 'Padre/Encargado',
+  padre: 'Padre/Encargado',
 };

@@ -18,6 +18,7 @@ const protectedPrefixes = ['/admin', '/profesor', '/padre', '/alumno', '/dashboa
 const rolePrefixes: Record<Role, string[]> = {
   admin: ['/admin'],
   profesor: ['/profesor'],
+  padre_encargado: ['/padre'],
   padre: ['/alumno', '/padre']
 };
 

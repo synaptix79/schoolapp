@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { memo, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import {
   CalendarPlus,
   Check,
@@ -15,7 +15,8 @@ import {
   Pin,
   ShieldCheck,
   Trash2,
-  Users
+  Users,
+  X
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -112,16 +113,27 @@ const roleChrome: Record<DemoWallRole, {
 export function DemoRoleWall({
   posts,
   childrenList = [],
-  fixedRole
+  fixedRole,
+  fixedChildId,
+  fixedRoleLabel,
 }: {
   posts: Post[];
   childrenList?: DemoChild[];
   fixedRole?: DemoWallRole;
+  fixedChildId?: string;
+  fixedRoleLabel?: string;
 }) {
   const [selectedRole, setSelectedRole] = useState<DemoWallRole>('admin');
   const role = fixedRole ?? selectedRole;
-  const selectedChild = childrenList[0];
-  const chrome = roleChrome[role];
+  const selectedChild = childrenList.find((child) => child.id === fixedChildId) ?? childrenList[0];
+  const baseChrome = roleChrome[role];
+  const chrome = role === 'alumno' && selectedChild
+    ? {
+        ...baseChrome,
+        eyebrow: `Muro · ${fixedRoleLabel ?? 'Alumno'} — ${selectedChild.nombre}`,
+        description: `Vista de solo lectura: avisos globales y comunicados dirigidos a ${selectedChild.grado}.`,
+      }
+    : baseChrome;
 
   const visiblePosts = useMemo(() => {
     if (role === 'admin') {
@@ -387,11 +399,11 @@ function SocialFeed({ posts, role, avatarClass }: { posts: Post[]; role: DemoWal
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="mx-auto grid w-full max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(min(100%,420px),1fr))] items-start gap-4">
         {filteredPosts.length ? (
           filteredPosts.map((post) => <SocialPost key={post.id} post={post} role={role} avatarClass={avatarClass} />)
         ) : (
-          <div className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground shadow-soft">
+          <div className="col-span-full rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground shadow-soft">
             No hay publicaciones para este filtro.
           </div>
         )}
@@ -403,6 +415,9 @@ function SocialFeed({ posts, role, avatarClass }: { posts: Post[]; role: DemoWal
 const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post: Post; role: DemoWallRole; avatarClass: string }) {
   const [liked, setLiked] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const isLongBody = post.body.length > 240;
+  const previewBody = isLongBody ? `${post.body.slice(0, 240).trimEnd()}…` : post.body;
   const reactionCount = post.reactions + (liked ? 1 : 0);
   const scopeLabel = post.scope === 'global' ? 'Global' : post.grades.join(', ');
   const canManage = role === 'admin' || (role === 'profesor' && post.author.startsWith('Prof.'));
@@ -410,7 +425,7 @@ const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post:
   const showEventActions = role !== 'alumno' && post.category === 'evento';
 
   return (
-    <article className={cn('overflow-hidden rounded-lg border bg-card shadow-soft', post.pinned ? 'border-primary/30' : 'border-border/80')}>
+    <article className={cn('min-w-0 overflow-hidden rounded-lg border bg-card shadow-soft', post.pinned ? 'border-primary/30' : 'border-border/80')}>
       {post.pinned ? (
         <div className="flex items-center gap-2 border-b border-primary/20 bg-primary/10 px-4 py-2 text-xs font-bold text-primary sm:px-5">
           <Pin className="size-3.5" aria-hidden />
@@ -425,7 +440,7 @@ const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post:
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
                 <Link href={`/aviso/${post.id}`} className="block truncate font-bold text-foreground hover:text-primary">
                   {post.author}
@@ -434,17 +449,24 @@ const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post:
                   {post.relativeTime}
                 </div>
               </div>
-              <span className={cn('w-fit shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold', scopeStyles[post.scope])}>
+              <span className={cn('max-w-full rounded-full border px-2.5 py-1 text-xs font-bold [overflow-wrap:anywhere]', scopeStyles[post.scope])}>
                 {scopeLabel}
               </span>
             </div>
           </div>
         </div>
 
-        <Link href={`/aviso/${post.id}`} className="mt-4 block">
-          <h2 className="text-lg font-bold leading-snug text-foreground sm:text-xl">{post.title}</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">{post.body}</p>
-        </Link>
+        <div className="mt-3 min-w-0">
+          <Link href={`/aviso/${post.id}`} className="block text-lg font-bold leading-snug text-foreground hover:text-primary [overflow-wrap:anywhere]">
+            <h2>{post.title}</h2>
+          </Link>
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">{expanded ? post.body : previewBody}</p>
+          {isLongBody ? (
+            <button type="button" onClick={() => setExpanded((current) => !current)} aria-expanded={expanded} className="mt-1 text-sm font-bold text-primary hover:underline">
+              {expanded ? 'Ver menos' : 'Ver más'}
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {post.image ? <PostImage variant={post.image} title={post.title} /> : null}
@@ -530,19 +552,37 @@ const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post:
 
 function PostImage({ variant, title }: { variant: string; title: string }) {
   const label = imageLabel(variant);
+  const [open, setOpen] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open && !dialog.open) dialog.showModal();
+    if (!open && dialog.open) dialog.close();
+  }, [open]);
 
   return (
-    <div className="relative aspect-[16/10] overflow-hidden border-y border-border/80 bg-canaan-celeste-suave sm:aspect-[16/8]">
-      <PostScene variant={variant} />
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canaan-texto/90 via-canaan-texto/62 to-transparent p-4 sm:p-5">
-        <div className="inline-flex rounded-full bg-card/95 px-3 py-1 text-xs font-bold text-foreground shadow-soft backdrop-blur">
-          {label}
+    <>
+      <button type="button" onClick={() => setOpen(true)} aria-label={`Ampliar ilustración: ${title}`} className="relative block aspect-video max-h-[280px] w-full overflow-hidden border-y border-border/80 bg-canaan-celeste-suave text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+        <PostScene variant={variant} />
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canaan-texto/90 via-canaan-texto/62 to-transparent p-4">
+          <span className="inline-flex rounded-full bg-card/95 px-3 py-1 text-xs font-bold text-foreground shadow-soft">{label}</span>
+          <span className="mt-2 block text-lg font-black leading-tight text-primary-foreground drop-shadow">{title}</span>
         </div>
-        <div className="mt-2 max-w-[20rem] text-xl font-black leading-tight text-primary-foreground drop-shadow sm:text-2xl">
-          {title}
+      </button>
+      <dialog ref={dialogRef} onClose={() => setOpen(false)} onClick={(event) => { if (event.target === event.currentTarget) setOpen(false); }} aria-label={`Ilustración ampliada: ${title}`} className="m-auto w-[min(92vw,900px)] max-w-none overflow-visible rounded-lg bg-card p-3 shadow-panel backdrop:bg-canaan-texto/80">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="min-w-0 font-bold text-foreground [overflow-wrap:anywhere]">{title}</p>
+          <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar ilustración" className="flex size-10 shrink-0 items-center justify-center rounded-md text-foreground hover:bg-muted">
+            <X className="size-5" aria-hidden />
+          </button>
         </div>
-      </div>
-    </div>
+        <div role="img" aria-label={label} className="relative aspect-video w-full overflow-hidden rounded-md bg-canaan-celeste-suave">
+          <PostScene variant={variant} />
+        </div>
+      </dialog>
+    </>
   );
 }
 

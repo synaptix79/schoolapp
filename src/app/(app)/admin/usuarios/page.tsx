@@ -34,6 +34,7 @@ export default function AdminUsuariosPage() {
             <select className="h-11 w-full rounded-md border border-input bg-card px-4 text-sm">
               <option>profesor</option>
               <option>alumno</option>
+              <option>padre_encargado</option>
               <option>admin</option>
             </select>
             <button className="h-11 w-full rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-canaan-celeste" type="button">

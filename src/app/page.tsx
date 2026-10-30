@@ -7,7 +7,8 @@ import type { RolActivo } from '@/lib/roles';
 const roleHomes: Record<RolActivo, string> = {
   direccion: '/admin',
   docente: '/profesor',
-  alumno: '/padre',
+  alumno: '/alumno/muro',
+  encargado: '/padre',
 };
 
 // Redirige al inicio del rol activo (leído de localStorage).
