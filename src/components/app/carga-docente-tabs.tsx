@@ -1,4 +1,6 @@
 'use client';
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 
 import { useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
@@ -56,9 +58,9 @@ const TIPO_CFG = {
 function buildBoletinDiario(grado: string, anots: AnotacionDocente[]): string {
   const hoy = anots.filter((a) => a.grado === grado && a.fecha === TODAY && a.estado === 'completada');
   if (!hoy.length) {
-    return `Hoy en ${grado} (${TODAY_FMT}):\n\nJornada de trabajo académico. Los alumnos participaron activamente.\n\n— ${demoDocentePerfil.nombre}`;
+    return `Hoy en ${formatAcademicLabel(grado)} (${TODAY_FMT}):\n\nJornada de trabajo académico. Los alumnos participaron activamente.\n\n— ${demoDocentePerfil.nombre}`;
   }
-  let text = `Hoy en ${grado} (${TODAY_FMT}):\n\n`;
+  let text = `Hoy en ${formatAcademicLabel(grado)} (${TODAY_FMT}):\n\n`;
   for (const a of hoy) {
     const quien = a.alumnoNombre ? `(${a.alumnoNombre}) ` : '';
     text += `${a.materia}: ${quien}${a.texto}\n\n`;
@@ -69,14 +71,14 @@ function buildBoletinDiario(grado: string, anots: AnotacionDocente[]): string {
 function buildBoletinSemanal(grado: string, anots: AnotacionDocente[]): string {
   const completadas = anots.filter((a) => a.grado === grado && a.estado === 'completada');
   if (!completadas.length) {
-    return `Esta semana en ${grado} (${WEEK_FMT}):\n\nSemana de trabajo académico. Los alumnos mostraron buen desempeño general. Próxima semana continuamos con el programa.\n\n¡Buen fin de semana! — ${demoDocentePerfil.nombre}`;
+    return `Esta semana en ${formatAcademicLabel(grado)} (${WEEK_FMT}):\n\nSemana de trabajo académico. Los alumnos mostraron buen desempeño general. Próxima semana continuamos con el programa.\n\n¡Buen fin de semana! — ${demoDocentePerfil.nombre}`;
   }
   const byMateria: Record<string, string[]> = {};
   for (const a of completadas) {
     if (!byMateria[a.materia]) byMateria[a.materia] = [];
     byMateria[a.materia].push(a.alumnoNombre ? `(${a.alumnoNombre}) ${a.texto}` : a.texto);
   }
-  let text = `Esta semana en ${grado} (${WEEK_FMT}):\n\n`;
+  let text = `Esta semana en ${formatAcademicLabel(grado)} (${WEEK_FMT}):\n\n`;
   for (const [materia, textos] of Object.entries(byMateria)) {
     text += `${materia}: ${textos.join(' ')}.\n\n`;
   }
@@ -306,7 +308,7 @@ export function CargaDocenteTabs() {
             onChange={(e) => setSelectedGrado(e.target.value)}
             className="h-8 rounded-md border border-input bg-card px-2 text-sm font-semibold text-foreground"
           >
-            {GRADOS.map((g) => <option key={g}>{g}</option>)}
+            {GRADOS.map((g) => <option key={g} value={g}>{formatAcademicLabel(g)}</option>)}
           </select>
         </div>
       </div>
@@ -568,7 +570,7 @@ export function CargaDocenteTabs() {
 
             {gradoAnnots.length === 0 && !showForm && (
               <div className="rounded-lg border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
-                No hay anotaciones para {selectedGrado} hoy.
+                No hay anotaciones para {formatAcademicLabel(selectedGrado)} hoy.
               </div>
             )}
           </div>
@@ -580,7 +582,7 @@ export function CargaDocenteTabs() {
             <div>
               <p className="text-sm font-semibold text-foreground">Boletín diario — {TODAY_FMT}</p>
               <p className="text-xs text-muted-foreground">
-                Resumen del día para alumnos de {selectedGrado}.
+                Resumen del día para alumnos de {formatAcademicLabel(selectedGrado)}.
               </p>
             </div>
 
@@ -644,7 +646,7 @@ export function CargaDocenteTabs() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-xs font-semibold text-primary">
                   <CheckCircle2 className="size-3.5 shrink-0" aria-hidden />
-                  Boletín publicado — visible para alumnos de {selectedGrado}.
+                  Boletín publicado — visible para alumnos de {formatAcademicLabel(selectedGrado)}.
                 </div>
                 <div className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                   {bdGrado.contenido}
@@ -666,7 +668,7 @@ export function CargaDocenteTabs() {
             <div>
               <p className="text-sm font-semibold text-foreground">Boletín semanal — {WEEK_FMT}</p>
               <p className="text-xs text-muted-foreground">
-                Resumen de la semana para alumnos de {selectedGrado}.
+                Resumen de la semana para alumnos de {formatAcademicLabel(selectedGrado)}.
               </p>
             </div>
 
@@ -730,7 +732,7 @@ export function CargaDocenteTabs() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-xs font-semibold text-primary">
                   <CheckCircle2 className="size-3.5 shrink-0" aria-hidden />
-                  Boletín semanal publicado — visible para alumnos de {selectedGrado}.
+                  Boletín semanal publicado — visible para alumnos de {formatAcademicLabel(selectedGrado)}.
                 </div>
                 <div className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                   {bsGrado.contenido}

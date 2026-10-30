@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import { GraduationCap, Phone, Mail, School, BookOpen } from 'lucide-react';
 
 import { PageIntro, PrivatePhotoPlaceholder } from '@/components/app/demo-blocks';
@@ -70,7 +72,7 @@ export default function ProfesorPerfilPage() {
                     <td className="px-4 py-3 font-semibold text-foreground">
                       <span className="flex items-center gap-2">
                         <School className="size-4 text-primary" aria-hidden />
-                        {g.grado}
+                        {formatAcademicLabel(g.grado)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{g.seccion}</td>

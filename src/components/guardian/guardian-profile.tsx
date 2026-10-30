@@ -1,5 +1,7 @@
 'use client';
 
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 import Link from 'next/link';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 
@@ -23,7 +25,7 @@ export function GuardianProfile() {
   return (
     <div className="mx-auto w-full max-w-[1180px] space-y-6">
       <PageIntro
-        eyebrow={`Padre/Encargado · ${alumno.grado ?? 'Alumno'} · Perfil`}
+        eyebrow={`Padre/Encargado · ${formatAcademicLabel(alumno.grado ?? 'Alumno')} · Perfil`}
         title={alumno.nombre}
         description={`Sección ${alumno.seccion ?? 'Sin datos'} · Turno ${alumno.turno ?? 'Sin datos'}`}
       />

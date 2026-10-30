@@ -1,4 +1,6 @@
 'use client';
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 
 import { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Download, FileSpreadsheet, Upload } from 'lucide-react';
@@ -49,7 +51,7 @@ type BulkImporterProps = {
 
 const gradoColumns: ColumnDef[] = [
   { key: 'nivel', label: 'nivel', example: 'EEB' },
-  { key: 'grado', label: 'grado', example: '3º EEB' },
+  { key: 'grado', label: 'grado', example: '3.º grado' },
   { key: 'seccion', label: 'seccion', example: 'A' },
   { key: 'anio_lectivo', label: 'anio_lectivo', example: '2026' }
 ];
@@ -58,7 +60,7 @@ const alumnoColumns: ColumnDef[] = [
   { key: 'nombre_completo', label: 'nombre_completo', example: 'Ana López' },
   { key: 'ci', label: 'ci', example: '4567890' },
   { key: 'fecha_nacimiento', label: 'fecha_nacimiento', example: '14/03/2017' },
-  { key: 'grado', label: 'grado', example: '3º EEB' },
+  { key: 'grado', label: 'grado', example: '3.º grado' },
   { key: 'seccion', label: 'seccion', example: 'A' },
   { key: 'anio_lectivo', label: 'anio_lectivo', example: '2026' },
   { key: 'tipo_sangre', label: 'tipo_sangre', example: 'O+' },
@@ -277,7 +279,7 @@ export function BulkImporter({
               className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm font-medium text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
             >
               {teacherGrades.map((grade) => (
-                <option key={grade} value={grade}>{grade}</option>
+                <option key={grade} value={grade}>{formatAcademicLabel(grade)}</option>
               ))}
             </select>
           </label>
@@ -609,7 +611,7 @@ function gradeKey(grado: string, seccion: string, anio: string) {
 }
 
 function normalizeGrade(value: string) {
-  return value.trim().replace(/\./g, '').replace(/\s+/g, ' ').toLowerCase();
+  return value.trim().replace(/\./g, '').replace(/\bgrado\b/gi, 'EEB').replace(/\s+/g, ' ').toLowerCase();
 }
 
 function normalizeCi(value: string) {

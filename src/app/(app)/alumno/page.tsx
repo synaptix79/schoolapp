@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import Link from 'next/link';
 import {
   Bell,
@@ -66,7 +68,7 @@ export default function AlumnoPage() {
       <PageIntro
         eyebrow="Alumno"
         title={`Hola, ${alumno.nombre}.`}
-        description={`${alumno.grado} · Sección ${alumno.seccion}. Resumen académico, asistencia, fechas importantes y horario semanal.`}
+        description={`${formatAcademicLabel(alumno.grado)} · Sección ${alumno.seccion}. Resumen académico, asistencia, fechas importantes y horario semanal.`}
         aside={
           <div className="rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
             Año lectivo: <span className="font-semibold text-foreground">{alumno.anioLectivo}</span>
@@ -151,7 +153,7 @@ export default function AlumnoPage() {
               {demoEvents.map((event) => (
                 <div key={event.id} className="flex items-start justify-between gap-3 rounded-md bg-muted/35 px-3 py-2">
                   <div>
-                    <p className="text-sm font-bold text-foreground">{event.titulo}</p>
+                    <p className="text-sm font-bold text-foreground">{formatAcademicLabel(event.titulo)}</p>
                     <p className="text-xs leading-5 text-muted-foreground">{event.descripcion}</p>
                   </div>
                   <span className="shrink-0 rounded-md bg-card px-2 py-1 text-xs font-bold text-muted-foreground">
@@ -194,7 +196,7 @@ export default function AlumnoPage() {
           <div className="space-y-3">
             {demoCommuniques.slice(0, 3).map((notice) => (
               <Link key={notice.id} href={`/aviso/${notice.id}`} className="block rounded-md border border-border bg-muted/35 p-3 transition-colors hover:bg-muted">
-                <p className="font-bold text-foreground">{notice.title}</p>
+                <p className="font-bold text-foreground">{formatAcademicLabel(notice.title)}</p>
                 <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground">{notice.body}</p>
               </Link>
             ))}

@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import Link from 'next/link';
 import { ArrowRight, LockKeyhole, Pin, ShieldCheck } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -80,11 +82,11 @@ export function NoticeCard({ notice, compact = false }: { notice: Notice; compac
         ) : null}
         <span className="text-xs font-semibold text-muted-foreground">{notice.date}</span>
       </div>
-      <div className={cn('mt-4 font-semibold text-foreground', compact ? 'text-lg' : 'text-2xl')}>{notice.title}</div>
+      <div className={cn('mt-4 font-semibold text-foreground', compact ? 'text-lg' : 'text-2xl')}>{formatAcademicLabel(notice.title)}</div>
       <p className={cn('mt-3 leading-7 text-muted-foreground', compact ? 'line-clamp-2 text-sm' : 'text-sm sm:text-base')}>{notice.body}</p>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
         <span className="font-medium text-muted-foreground">
-          {notice.scope === 'global' ? 'Toda la comunidad' : `Grados: ${notice.grades.join(', ')}`}
+          {notice.scope === 'global' ? 'Toda la comunidad' : `Grados: ${notice.grades.map(formatAcademicLabel).join(', ')}`}
         </span>
         <span className="inline-flex items-center gap-1 font-semibold text-primary">
           Ver aviso

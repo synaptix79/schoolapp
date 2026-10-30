@@ -1,4 +1,6 @@
 'use client';
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -51,7 +53,7 @@ export function MisGradosAccordion() {
                   <Users className="size-4" aria-hidden />
                 </span>
                 <div>
-                  <p className="font-bold text-foreground">{gradoLabel}</p>
+                  <p className="font-bold text-foreground">{formatAcademicLabel(gradoLabel)}</p>
                   <p className="text-xs text-muted-foreground">
                     {info?.alumnos ?? alumnos.length} alumnos · Año lectivo{' '}
                     {info?.anioLectivo ?? 2026}

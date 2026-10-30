@@ -1,5 +1,7 @@
 'use client';
 
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link2, Loader2, RefreshCw, Search, ShieldCheck, Trash2, UserRound } from 'lucide-react';
 
@@ -272,7 +274,7 @@ export function GuardianLinkManager() {
             >
               <option value="">Seleccionar alumno…</option>
               {availableStudents.map((student) => (
-                <option key={student.id} value={student.id}>{student.nombre} · {student.grado ?? 'Sin grado'} {student.seccion ?? ''}</option>
+                <option key={student.id} value={student.id}>{student.nombre} · {formatAcademicLabel(student.grado ?? 'Sin grado')} {student.seccion ?? ''}</option>
               ))}
             </select>
             <select
@@ -331,7 +333,7 @@ export function GuardianLinkManager() {
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {link.alumnos.grado ?? 'Sin grado'} · {link.alumnos.seccion ?? 'Sin sección'} · {link.relationship_type}
+                    {formatAcademicLabel(link.alumnos.grado ?? 'Sin grado')} · {link.alumnos.seccion ?? 'Sin sección'} · {link.relationship_type}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">

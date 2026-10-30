@@ -27,7 +27,7 @@ export default async function AppLayout({ children }: Readonly<{ children: React
       <div className="flex min-h-0 flex-1">
         <AppNav rolActivo={rolActivo} />
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1600px] px-4 pb-28 pt-6 sm:px-6 lg:pb-10 lg:px-8 xl:px-10 2xl:px-12">
+          <div className="mx-auto w-full max-w-[1600px] px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-6 sm:px-6 lg:pb-10 lg:px-8 xl:px-10 2xl:px-12">
             {children}
           </div>
         </main>

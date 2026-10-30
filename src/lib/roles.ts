@@ -69,7 +69,7 @@ export const roleMeta: Record<
   alumno: {
     label: 'Alumno',
     badge: 'Alumno',
-    name: 'Ana López · 3.º EEB',
+    name: 'Ana López · 3.º grado',
     description: 'Vista de alumno: agenda, notas y perfil.',
     Icon: UserRound,
     navActiveStyle:      'bg-accent text-primary',

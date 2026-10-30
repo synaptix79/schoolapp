@@ -20,8 +20,8 @@ export default function ProfesorAvisosPage() {
             <input className="h-11 w-full rounded-md border border-input bg-card px-4 text-sm" placeholder="Título" />
             <textarea className="min-h-28 w-full rounded-md border border-input bg-card px-4 py-3 text-sm" placeholder="Mensaje para alumnos" />
             <select className="h-11 w-full rounded-md border border-input bg-card px-4 text-sm">
-              <option>3.º EEB A</option>
-              <option>1.º EEB B</option>
+              <option value="3.º EEB A">3.º grado A</option>
+              <option value="1.º EEB B">1.º grado B</option>
             </select>
             <button className="h-11 w-full rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-canaan-celeste" type="button">
               Publicar aviso demo

@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import { ShieldCheck } from 'lucide-react';
 
 import { BulkImporter } from '@/components/app/bulk-importer';
@@ -17,7 +19,7 @@ export default function AdminAlumnosPage() {
         columns={['Alumno', 'Grado', 'Tutor', 'Asistencia', 'Fotos']}
         rows={demoChildren.map((child) => [
           child.nombre,
-          `${child.grado} · ${child.seccion}`,
+          `${formatAcademicLabel(child.grado)} · ${child.seccion}`,
           child.tutor,
           child.asistencia,
           child.consentimientoFotos ? 'Consentidas' : 'Sin consentimiento'

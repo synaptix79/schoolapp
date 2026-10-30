@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, CalendarDays, Pin, UserRound } from 'lucide-react';
@@ -22,8 +24,8 @@ export default async function AvisoDetailPage({ params }: { params: Promise<{ id
 
       <PageIntro
         eyebrow={notice.category}
-        title={notice.title}
-        description={notice.scope === 'global' ? 'Publicado para toda la comunidad educativa.' : `Publicado para: ${notice.grades.join(', ')}.`}
+        title={formatAcademicLabel(notice.title)}
+        description={notice.scope === 'global' ? 'Publicado para toda la comunidad educativa.' : `Publicado para: ${notice.grades.map(formatAcademicLabel).join(', ')}.`}
         aside={
           <div className="rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
             Alcance: <span className="font-semibold text-foreground">{notice.scope === 'global' ? 'global' : 'por grado'}</span>

@@ -1,5 +1,7 @@
 'use client';
 
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, Bell, BookOpen, ClipboardList, FileText, Info, Star, X } from 'lucide-react';
 
@@ -297,7 +299,7 @@ function BoletinContent({ boletines }: { boletines: BoletinSemanal[] }) {
       {previous.map((boletin) => (
         <div key={boletin.id} className="rounded-lg border border-border bg-background p-4">
           <h4 className="text-sm font-semibold text-foreground">{boletin.titulo}</h4>
-          <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{boletin.resumen}</p>
+          <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{formatAcademicLabel(boletin.resumen)}</p>
           {boletin.hitos.length > 0 && (
             <div className="mt-2.5 flex flex-wrap gap-2">
               {boletin.hitos.map((hito, i) => (

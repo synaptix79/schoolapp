@@ -1,4 +1,6 @@
 'use client';
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
@@ -441,7 +443,7 @@ export function CalendarioView({
                   className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
                 >
                   {gradeOptions.map((grado) => (
-                    <option key={grado} value={grado}>{grado}</option>
+                    <option key={grado} value={grado}>{formatAcademicLabel(grado)}</option>
                   ))}
                 </select>
               </label>
@@ -805,7 +807,7 @@ function ActivityModal({ activity, onClose }: { activity: Actividad; onClose: ()
         <div className="flex items-start justify-between gap-3 p-5">
           <div>
             <span className={cn('rounded border px-2 py-0.5 text-xs font-bold', tipo.pill)}>{tipo.label}</span>
-            <h2 className="mt-2 text-lg font-bold text-foreground">{activity.titulo}</h2>
+            <h2 className="mt-2 text-lg font-bold text-foreground">{formatAcademicLabel(activity.titulo)}</h2>
           </div>
           <button
             onClick={onClose}
@@ -824,7 +826,7 @@ function ActivityModal({ activity, onClose }: { activity: Actividad; onClose: ()
             <span className="capitalize">{fechaLarga(activity.fecha)}</span>
             {activity.hora    && <span>· {activity.hora} hs</span>}
             {activity.materia && <span>· {activity.materia}</span>}
-            {activity.grado   ? <span>· {activity.grado}</span> : <span>· Toda la comunidad</span>}
+            {activity.grado   ? <span>· {formatAcademicLabel(activity.grado)}</span> : <span>· Toda la comunidad</span>}
           </div>
         </div>
       </div>

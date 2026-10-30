@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import { ImagePlus, Megaphone, Pin } from 'lucide-react';
 
 import { NoticeCard, PageIntro } from '@/components/app/demo-blocks';
@@ -45,7 +47,7 @@ export default function AdminAvisosPage() {
                     <span>
                       <span className="block font-bold text-foreground">{label}</span>
                       <span className="mt-1 block text-xs leading-5 text-muted-foreground">
-                        {index === 0 ? 'Global' : index === 1 ? 'Ej. 3.º EEB' : 'Multi-select'}
+                        {index === 0 ? 'Global' : index === 1 ? 'Ej. 3.º grado' : 'Multi-select'}
                       </span>
                     </span>
                   </label>
@@ -57,7 +59,7 @@ export default function AdminAvisosPage() {
               {demoGrades.slice(1, 5).map((grade) => (
                 <label key={`${grade.grado}-${grade.seccion}`} className="flex items-center gap-2 rounded-md border border-border p-3 text-sm">
                   <input type="checkbox" defaultChecked={grade.grado === '3.º EEB'} />
-                  {grade.grado} {grade.seccion}
+                  {formatAcademicLabel(grade.grado)} {grade.seccion}
                 </label>
               ))}
             </div>

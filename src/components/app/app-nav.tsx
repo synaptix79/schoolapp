@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ClipboardList, FileText, Megaphone, Menu, Users, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { NavItem, RolActivo } from '@/lib/roles';
 import { navItemsMap, roleMeta } from '@/lib/roles';
@@ -14,21 +14,64 @@ export function AppNav({ rolActivo }: { rolActivo: RolActivo }) {
   const items = navItemsMap[rolActivo];
   const { navActiveStyle, mobileActiveStyle } = roleMeta[rolActivo];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const hasOverflowMenu = items.length > 5;
-  const mobileItems = hasOverflowMenu ? items.slice(0, 4) : items;
-  const overflowMenuActive = hasOverflowMenu && items.slice(4).some((item) => isActivePath(pathname, item.href));
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const primaryPaths: Record<RolActivo, string[]> = {
+    direccion: ['/admin', '/admin/grados', '/admin/avisos'],
+    docente: ['/profesor', '/profesor/mis-grados', '/profesor/calendario'],
+    alumno: ['/alumno/muro', '/alumno/alumno-1/calificaciones', '/alumno/alumno-1/galeria'],
+    encargado: ['/padre', '/padre/mis-hijos', '/padre/calendario'],
+  };
+  const additionalItems: Record<RolActivo, NavItem[]> = {
+    direccion: [{ href: '/admin/materias', label: 'Materias', icon: FileText }],
+    docente: [{ href: '/profesor/avisos', label: 'Comunicados', icon: Megaphone }],
+    alumno: [],
+    encargado: [
+      { href: '/padre/mis-hijos', label: 'Mis hijos', icon: Users },
+      { href: '/padre/asistencia', label: 'Asistencia', icon: ClipboardList },
+      { href: '/padre/comunicaciones', label: 'Comunicados', icon: Megaphone },
+    ],
+  };
+  const allMobileItems = [...items, ...additionalItems[rolActivo]];
+  const mobileItems = primaryPaths[rolActivo].map((href) => allMobileItems.find((item) => item.href === href)!).map((item) => ({
+    ...item,
+    label: item.href.endsWith('/calendario') ? 'Agenda' : item.href === '/padre' || item.href === '/alumno/muro' ? 'Inicio' : item.label,
+  }));
+  const overflowMenuActive = !mobileItems.some((item) => isActivePath(pathname, item.href)) && allMobileItems.some((item) => isActivePath(pathname, item.href));
 
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname, rolActivo]);
 
   useEffect(() => {
-    if (!mobileMenuOpen) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMobileMenuOpen(false);
+    const closeOnDesktop = () => { if (window.innerWidth >= 1024) setMobileMenuOpen(false); };
+    window.addEventListener('resize', closeOnDesktop);
+    return () => window.removeEventListener('resize', closeOnDesktop);
+  }, []);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    const update = () => {
+      const focused = document.activeElement;
+      const editing = focused instanceof HTMLElement && (focused.matches('input, textarea, select') || focused.isContentEditable);
+      setKeyboardOpen(Boolean(editing && viewport && window.innerHeight - viewport.height > 120));
     };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => document.removeEventListener('keydown', closeOnEscape);
+    viewport?.addEventListener('resize', update);
+    document.addEventListener('focusin', update);
+    document.addEventListener('focusout', update);
+    return () => {
+      viewport?.removeEventListener('resize', update);
+      document.removeEventListener('focusin', update);
+      document.removeEventListener('focusout', update);
+    };
+  }, []);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (mobileMenuOpen && !dialog.open) dialog.showModal();
+    if (!mobileMenuOpen && dialog.open) dialog.close();
   }, [mobileMenuOpen]);
 
   return (
@@ -56,10 +99,10 @@ export function AppNav({ rolActivo }: { rolActivo: RolActivo }) {
 
       {/* ── Mobile bottom bar ─────────────────────────────────────────── */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-panel backdrop-blur lg:hidden"
+        className={cn('fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-panel backdrop-blur lg:hidden', keyboardOpen && 'hidden')}
         aria-label="Navegación principal"
       >
-        <div className={cn('mx-auto grid w-full max-w-3xl gap-1', hasOverflowMenu || mobileItems.length === 5 ? 'grid-cols-5' : 'grid-cols-4')}>
+        <div className="mx-auto grid w-full max-w-3xl grid-cols-4 gap-1">
           {mobileItems.map((item, i) => {
             const Icon = item.icon;
             const active = isActivePath(pathname, item.href);
@@ -83,8 +126,8 @@ export function AppNav({ rolActivo }: { rolActivo: RolActivo }) {
               </div>
             );
           })}
-          {hasOverflowMenu ? (
             <button
+              ref={menuButtonRef}
               type="button"
               aria-haspopup="dialog"
               aria-expanded={mobileMenuOpen}
@@ -100,23 +143,15 @@ export function AppNav({ rolActivo }: { rolActivo: RolActivo }) {
               <Menu className="size-[18px]" aria-hidden />
               <span>Menú</span>
             </button>
-          ) : null}
         </div>
       </nav>
 
-      {hasOverflowMenu && mobileMenuOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            aria-label="Cerrar todos los menús"
-            onClick={() => setMobileMenuOpen(false)}
-            className="absolute inset-0 bg-canaan-texto/40 backdrop-blur-[2px]"
-          />
-          <section
-            role="dialog"
-            aria-modal="true"
+      <dialog
+            ref={dialogRef}
+            onClose={() => { setMobileMenuOpen(false); menuButtonRef.current?.focus(); }}
+            onClick={(event) => { if (event.target === event.currentTarget) setMobileMenuOpen(false); }}
             aria-labelledby="mobile-menu-title"
-            className="absolute inset-x-0 bottom-0 max-h-[78dvh] overflow-y-auto rounded-t-2xl border-t border-border bg-card px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-3 shadow-panel"
+            className="fixed inset-x-0 bottom-0 top-auto m-0 max-h-[78dvh] w-full max-w-none overflow-y-auto rounded-t-2xl border-t border-border bg-card px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-3 shadow-panel backdrop:bg-canaan-texto/40 lg:hidden"
           >
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-border" aria-hidden />
             <div className="mx-auto flex w-full max-w-xl items-center justify-between gap-3">
@@ -138,7 +173,7 @@ export function AppNav({ rolActivo }: { rolActivo: RolActivo }) {
             </div>
 
             <div className="mx-auto mt-4 grid w-full max-w-xl grid-cols-2 gap-2">
-              {items.map((item) => {
+              {allMobileItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActivePath(pathname, item.href);
                 return (
@@ -162,9 +197,7 @@ export function AppNav({ rolActivo }: { rolActivo: RolActivo }) {
                 );
               })}
             </div>
-          </section>
-        </div>
-      ) : null}
+      </dialog>
     </>
   );
 }

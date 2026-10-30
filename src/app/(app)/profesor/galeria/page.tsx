@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import { Upload } from 'lucide-react';
 
 import { PrivatePhotoPlaceholder, PrivacyNote, PageIntro } from '@/components/app/demo-blocks';
@@ -34,7 +36,7 @@ export default function ProfesorGaleriaPage() {
               <select className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm">
                 <option>Ana López</option>
                 <option>Mateo López</option>
-                <option>3.º EEB A · evidencia grupal</option>
+                <option>3.º grado A · evidencia grupal</option>
               </select>
               <input className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm" placeholder="Descripción" />
               <label className="flex items-center gap-2 rounded-md border border-border p-3 text-sm">
@@ -52,7 +54,7 @@ export default function ProfesorGaleriaPage() {
               <PrivatePhotoPlaceholder
                 key={photo.id}
                 title={photo.alumno}
-                description={`${photo.descripcion} · ${photo.grado}`}
+                description={`${photo.descripcion} · ${formatAcademicLabel(photo.grado)}`}
                 locked={!photo.consentimiento || !photo.visible}
               />
             ))}

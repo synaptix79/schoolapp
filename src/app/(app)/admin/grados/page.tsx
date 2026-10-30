@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import { DemoTable, PageIntro } from '@/components/app/demo-blocks';
 import { BulkImporter } from '@/components/app/bulk-importer';
 import { demoGrades } from '@/lib/demo';
@@ -13,7 +15,7 @@ export default function AdminGradosPage() {
 
       <DemoTable
         columns={['Grado', 'Sección', 'Año', 'Profesor', 'Alumnos']}
-        rows={demoGrades.map((grade) => [grade.grado, grade.seccion, grade.anioLectivo, grade.profesor, grade.alumnos])}
+        rows={demoGrades.map((grade) => [formatAcademicLabel(grade.grado), grade.seccion, grade.anioLectivo, grade.profesor, grade.alumnos])}
       />
 
       <BulkImporter

@@ -1,5 +1,7 @@
 'use client';
 
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 import { useState } from 'react';
 import { Check, ChevronDown, Loader2, RefreshCw, UserRound } from 'lucide-react';
 
@@ -146,7 +148,7 @@ function studentSubtitle(student: {
   estado: string;
 }) {
   return [
-    [student.grado, student.seccion].filter(Boolean).join(' · '),
+    [student.grado ? formatAcademicLabel(student.grado) : null, student.seccion].filter(Boolean).join(' · '),
     student.turno ? `Turno ${student.turno}` : null,
     student.estado === 'activo' ? 'Activo' : student.estado,
   ]

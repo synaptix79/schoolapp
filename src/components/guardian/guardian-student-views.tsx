@@ -1,5 +1,7 @@
 'use client';
 
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 import { AcademicTabs } from '@/components/app/academic-tabs';
 import { CalendarioView } from '@/components/app/calendario-view';
 import { PageIntro, PrivacyNote, PrivatePhotoPlaceholder } from '@/components/app/demo-blocks';
@@ -62,7 +64,7 @@ export function GuardianAcademic() {
   return (
     <div className="mx-auto w-full max-w-[1180px] space-y-6">
       <PageIntro
-        eyebrow={`${alumno.grado} · Académico`}
+        eyebrow={`${formatAcademicLabel(alumno.grado)} · Académico`}
         title={alumno.nombre}
         description="Notas diarias, calificaciones, boletín semanal y recordatorios — todo en un lugar."
       />
@@ -102,7 +104,7 @@ export function GuardianDeliverables() {
               <PrivatePhotoPlaceholder
                 key={photo.id}
                 title={photo.alumno}
-                description={`${photo.descripcion} · ${photo.grado}`}
+                description={`${photo.descripcion} · ${formatAcademicLabel(photo.grado)}`}
               />
             ))}
           </div>

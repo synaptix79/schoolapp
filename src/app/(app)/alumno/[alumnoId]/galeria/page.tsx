@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import { notFound } from 'next/navigation';
 
 import { PageIntro, PrivacyNote, PrivatePhotoPlaceholder } from '@/components/app/demo-blocks';
@@ -35,7 +37,7 @@ export default async function AlumnoGaleriaPage({
               <PrivatePhotoPlaceholder
                 key={photo.id}
                 title={photo.alumno}
-                description={`${photo.descripcion} · ${photo.grado}`}
+                description={`${photo.descripcion} · ${formatAcademicLabel(photo.grado)}`}
               />
             ))}
           </div>

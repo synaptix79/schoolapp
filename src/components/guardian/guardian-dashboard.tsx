@@ -1,5 +1,7 @@
 'use client';
 
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 import Link from 'next/link';
 import {
   Bell,
@@ -66,7 +68,7 @@ export function GuardianDashboard() {
           Información de {data.student.nombre}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {[data.student.grado, data.student.seccion, data.student.turno ? `Turno ${data.student.turno}` : null]
+          {[data.student.grado ? formatAcademicLabel(data.student.grado) : null, data.student.seccion, data.student.turno ? `Turno ${data.student.turno}` : null]
             .filter(Boolean)
             .join(' · ')}
         </p>

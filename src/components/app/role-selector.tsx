@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Check, ChevronDown } from 'lucide-react';
 
@@ -16,13 +17,16 @@ export function RoleSelector() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ left: 8, top: 8, width: 240, maxHeight: 300 });
   const current = roleMeta[rolActivo];
 
   // Cierra el dropdown al hacer clic fuera
   useEffect(() => {
     if (!open) return;
     function handleOutsideClick(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (!containerRef.current?.contains(e.target as Node) && !menuRef.current?.contains(e.target as Node)) {
         setOpen(false);
       }
     }
@@ -34,10 +38,30 @@ export function RoleSelector() {
   useEffect(() => {
     if (!open) return;
     function handleEsc(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') { setOpen(false); triggerRef.current?.focus(); }
     }
     document.addEventListener('keydown', handleEsc);
     return () => document.removeEventListener('keydown', handleEsc);
+  }, [open]);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    const update = () => {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const width = Math.min(240, window.innerWidth - 16);
+      const below = window.innerHeight - rect.bottom - 16;
+      const above = rect.top - 16;
+      const useAbove = below < 300 && above > below;
+      const maxHeight = Math.max(0, useAbove ? above : below);
+      const height = Math.min(menuRef.current?.scrollHeight ?? 300, maxHeight);
+      setPosition({ left: Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8)), top: useAbove ? rect.top - 8 - height : rect.bottom + 8, width, maxHeight });
+    };
+    update();
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update, true);
+    menuRef.current?.querySelector<HTMLButtonElement>('[aria-selected="true"]')?.focus();
+    return () => { window.removeEventListener('resize', update); window.removeEventListener('scroll', update, true); };
   }, [open]);
 
   function handleSelect(rol: RolActivo) {
@@ -49,6 +73,7 @@ export function RoleSelector() {
   return (
     <div ref={containerRef} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
@@ -63,11 +88,21 @@ export function RoleSelector() {
         />
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
+          ref={menuRef}
           role="listbox"
           aria-label="Seleccionar perfil de vista"
-          className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-lg border border-border bg-card shadow-panel"
+          onKeyDown={(event) => {
+            if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+            event.preventDefault();
+            const options = Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]') ?? []);
+            const currentIndex = options.indexOf(document.activeElement as HTMLButtonElement);
+            const next = event.key === 'Home' ? 0 : event.key === 'End' ? options.length - 1 : (currentIndex + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
+            options[next]?.focus();
+          }}
+          style={{ ...position }}
+          className="fixed z-[100] overflow-y-auto rounded-lg border border-border bg-card shadow-panel"
         >
           <p className="border-b border-border px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
             Vista demo por perfil
@@ -101,7 +136,7 @@ export function RoleSelector() {
               </button>
             );
           })}
-        </div>
+        </div>, document.body
       )}
     </div>
   );

@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
@@ -17,7 +19,7 @@ export default async function AlumnoPerfilPage({
   return (
     <div className="mx-auto w-full max-w-[1180px] space-y-6">
       <PageIntro
-        eyebrow={`Alumno · ${alumno.grado} · Perfil`}
+        eyebrow={`Alumno · ${formatAcademicLabel(alumno.grado)} · Perfil`}
         title={alumno.nombre}
         description={`Sección ${alumno.seccion} · Año lectivo ${alumno.anioLectivo}`}
       />

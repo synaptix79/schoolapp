@@ -1,5 +1,7 @@
 'use client';
 
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 import { useGuardianStudent } from '@/lib/guardian/student-context';
 import type { GuardianModule, GuardianModuleResponse } from '@/lib/guardian/types';
 import { useStudentResource } from '@/lib/guardian/use-student-resource';
@@ -152,5 +154,5 @@ function formatValue(value: unknown, field: string) {
     const date = new Date(value);
     if (!Number.isNaN(date.getTime())) return new Intl.DateTimeFormat('es-PY', { dateStyle: 'medium' }).format(date);
   }
-  return String(value);
+  return field === 'grado' && typeof value === 'string' ? formatAcademicLabel(value) : String(value);
 }

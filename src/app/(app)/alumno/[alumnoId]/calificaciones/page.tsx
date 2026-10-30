@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import { notFound } from 'next/navigation';
 
 import { AcademicTabs } from '@/components/app/academic-tabs';
@@ -22,7 +24,7 @@ export default async function AlumnoAcademicPage({
   return (
     <div className="mx-auto w-full max-w-[1180px] space-y-6">
       <PageIntro
-        eyebrow={`${alumno.grado} · Académico`}
+        eyebrow={`${formatAcademicLabel(alumno.grado)} · Académico`}
         title={alumno.nombre}
         description="Notas diarias, calificaciones, boletín semanal y recordatorios — todo en un lugar."
       />

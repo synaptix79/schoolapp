@@ -1,4 +1,6 @@
 'use client';
+import { formatAcademicLabel } from '@/lib/academic-levels';
+
 
 import Link from 'next/link';
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -93,7 +95,7 @@ const roleChrome: Record<DemoWallRole, {
   profesor: {
     eyebrow: 'Muro · Docente — Prof. Marta Benítez',
     title: 'Comunicación de tus grados asignados',
-    description: 'Vista filtrada a publicaciones globales y grados 3.º EEB / 1.º EEB.',
+    description: 'Vista filtrada a publicaciones globales y grados 3.º grado / 1.º grado.',
     panelClass: 'border-canaan-celeste/20 bg-canaan-celeste/5',
     badgeClass: 'bg-canaan-celeste text-primary-foreground',
     avatarClass: 'bg-canaan-celeste text-primary-foreground',
@@ -102,7 +104,7 @@ const roleChrome: Record<DemoWallRole, {
   alumno: {
     eyebrow: 'Muro · Alumno — Ana López',
     title: 'Avisos y noticias para tu grado',
-    description: 'Vista de solo lectura: avisos globales y comunicados dirigidos a 3.º EEB.',
+    description: 'Vista de solo lectura: avisos globales y comunicados dirigidos a 3.º grado.',
     panelClass: 'border-canaan-celeste/30 bg-canaan-celeste-suave/80',
     badgeClass: 'bg-primary text-primary-foreground',
     avatarClass: 'bg-primary text-primary-foreground',
@@ -131,7 +133,7 @@ export function DemoRoleWall({
     ? {
         ...baseChrome,
         eyebrow: `Muro · ${fixedRoleLabel ?? 'Alumno'} — ${selectedChild.nombre}`,
-        description: `Vista de solo lectura: avisos globales y comunicados dirigidos a ${selectedChild.grado}.`,
+        description: `Vista de solo lectura: avisos globales y comunicados dirigidos a ${formatAcademicLabel(selectedChild.grado)}.`,
       }
     : baseChrome;
 
@@ -218,7 +220,7 @@ function QuickOverview({ role }: { role: Exclude<DemoWallRole, 'alumno'> }) {
         { label: 'Docentes sin cargar notas', value: '2', detail: 'Requiere seguimiento', tone: 'warning' }
       ]
     : [
-        { label: 'Próxima clase', value: '09:30', detail: 'Ciencias · 3.º EEB A', tone: 'neutral' },
+        { label: 'Próxima clase', value: '09:30', detail: 'Ciencias · 3.º grado A', tone: 'neutral' },
         { label: 'Mis alumnos', value: '59', detail: '2 grados asignados', tone: 'neutral' },
         { label: 'Asistencia', value: 'Opcional', detail: 'Llamar solo cuando lo necesites', tone: 'neutral' },
         { label: 'Materias sin notas', value: '2', detail: 'Matemática · Comunicación', tone: 'warning' },
@@ -322,13 +324,13 @@ function RoleToolbar({ role, selectedChild }: { role: DemoWallRole; selectedChil
           </span>
           <span>
             <span className="block font-bold text-foreground">Publicar para mis grados...</span>
-            <span className="text-sm text-muted-foreground">Limitado a 3.º EEB A y 1.º EEB B.</span>
+            <span className="text-sm text-muted-foreground">Limitado a 3.º grado A y 1.º grado B.</span>
           </span>
         </Link>
         <div className="grid gap-2 sm:grid-cols-3 sm:gap-3">
           <ToolbarLink href="/profesor/calificaciones" icon={ClipboardList} label="Cargar notas" />
           <ToolbarLink href="/profesor/galeria" icon={FileImage} label="Entregables" />
-          <InfoPill icon={ClipboardList} title="Pendiente" description="Matemática · 3.º EEB" compact />
+          <InfoPill icon={ClipboardList} title="Pendiente" description="Matemática · 3.º grado" compact />
         </div>
       </div>
     );
@@ -339,7 +341,7 @@ function RoleToolbar({ role, selectedChild }: { role: DemoWallRole; selectedChil
       <div className="flex flex-col gap-1">
         <p className="font-bold text-foreground">{selectedChild?.nombre ?? 'Ana López'}</p>
         <p className="text-sm text-muted-foreground">
-          {selectedChild?.grado ?? '3.º EEB'} · Sección {selectedChild?.seccion ?? 'A'} · solo lectura
+          {formatAcademicLabel(selectedChild?.grado ?? '3.º EEB')} · Sección {selectedChild?.seccion ?? 'A'} · solo lectura
         </p>
       </div>
     </div>
@@ -450,7 +452,7 @@ const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post:
   const isLongBody = post.body.length > 240;
   const previewBody = isLongBody ? `${post.body.slice(0, 240).trimEnd()}…` : post.body;
   const reactionCount = post.reactions + (liked ? 1 : 0);
-  const scopeLabel = post.scope === 'global' ? 'Global' : post.grades.join(', ');
+  const scopeLabel = post.scope === 'global' ? 'Global' : post.grades.map(formatAcademicLabel).join(', ');
   const canManage = role === 'admin' || (role === 'profesor' && post.author.startsWith('Prof.'));
   const canReact = role !== 'alumno';
   const showEventActions = role !== 'alumno' && post.category === 'evento';
@@ -489,7 +491,7 @@ const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post:
 
         <div className="mt-3 min-w-0">
           <Link href={`/aviso/${post.id}`} className="block text-lg font-bold leading-snug text-foreground hover:text-primary [overflow-wrap:anywhere]">
-            <h2>{post.title}</h2>
+            <h2>{formatAcademicLabel(post.title)}</h2>
           </Link>
           <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">{expanded ? post.body : previewBody}</p>
           {isLongBody ? (
@@ -500,7 +502,7 @@ const SocialPost = memo(function SocialPost({ post, role, avatarClass }: { post:
         </div>
       </div>
 
-      {post.image ? <PostImage variant={post.image} title={post.title} /> : null}
+      {post.image ? <PostImage variant={post.image} title={formatAcademicLabel(post.title)} /> : null}
 
       <footer className="space-y-3 border-t border-border px-4 py-3 sm:px-5">
         <div className="flex flex-wrap items-center justify-between gap-3">

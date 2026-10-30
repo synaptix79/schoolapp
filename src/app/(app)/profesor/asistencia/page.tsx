@@ -115,7 +115,7 @@ export default function ProfesorAsistenciaPage() {
               <ClipboardCheck className="size-5" aria-hidden />
             </span>
             <div>
-              <h2 className="font-bold text-foreground">3.º EEB A</h2>
+              <h2 className="font-bold text-foreground">3.º grado A</h2>
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
                 Si no se llama asistencia hoy, no queda pendiente ni se registra ausencia automática.
               </p>
@@ -209,7 +209,7 @@ export default function ProfesorAsistenciaPage() {
                       />
                       <span className="min-w-0">
                         <span className="block font-semibold text-foreground">{child.nombre}</span>
-                        <span className="block text-xs text-muted-foreground">3.º EEB · Sección A</span>
+                        <span className="block text-xs text-muted-foreground">3.º grado · Sección A</span>
                       </span>
                     </label>
 

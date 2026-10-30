@@ -1,3 +1,5 @@
+
+import { formatAcademicLabel } from '@/lib/academic-levels';
 import { BarChart3 } from 'lucide-react';
 
 import { DemoTable, MetricCard, PageIntro } from '@/components/app/demo-blocks';
@@ -20,7 +22,7 @@ export default function AdminReportesPage() {
 
       <DemoTable
         columns={['Grado', 'Carga', 'Pendientes', 'Profesor']}
-        rows={demoAdminReports.map((item) => [item.grado, item.carga, item.pendientes, item.profesor])}
+        rows={demoAdminReports.map((item) => [formatAcademicLabel(item.grado), item.carga, item.pendientes, item.profesor])}
       />
     </div>
   );
