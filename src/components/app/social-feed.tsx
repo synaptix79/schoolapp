@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   CalendarPlus,
   Check,
@@ -369,11 +369,38 @@ function InfoPill({ icon: Icon, title, description, compact = false }: { icon: L
 
 function SocialFeed({ posts, role, avatarClass }: { posts: Post[]; role: DemoWallRole; avatarClass: string }) {
   const [filter, setFilter] = useState<Filter>('todo');
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const filteredPosts = useMemo(() => {
     const visible = filter === 'todo' ? posts : posts.filter((post) => post.category === filter);
     return [...visible].sort((a, b) => Number(b.pinned) - Number(a.pinned));
   }, [filter, posts]);
+
+  useLayoutEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+    if (!filteredPosts.length) {
+      grid.style.gridAutoRows = '';
+      grid.style.rowGap = '';
+      return;
+    }
+
+    // One-pixel tracks let each card end independently while retaining DOM order.
+    // The wrapper includes the 16px vertical gutter in its measured height.
+    const items = Array.from(grid.children) as HTMLElement[];
+    const measure = (item: HTMLElement) => {
+      item.style.gridRowEnd = `span ${Math.ceil(item.getBoundingClientRect().height)}`;
+    };
+    items.forEach(measure);
+    grid.style.gridAutoRows = '1px';
+    grid.style.rowGap = '0px';
+
+    const observer = new ResizeObserver((entries) => {
+      entries.forEach((entry) => measure(entry.target as HTMLElement));
+    });
+    items.forEach((item) => observer.observe(item));
+    return () => observer.disconnect();
+  }, [filteredPosts]);
 
   return (
     <section className="space-y-3">
@@ -399,9 +426,13 @@ function SocialFeed({ posts, role, avatarClass }: { posts: Post[]; role: DemoWal
         </div>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(min(100%,420px),1fr))] items-start gap-4">
+      <div ref={gridRef} className="mx-auto grid w-full max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(min(100%,420px),1fr))] items-start gap-x-4">
         {filteredPosts.length ? (
-          filteredPosts.map((post) => <SocialPost key={post.id} post={post} role={role} avatarClass={avatarClass} />)
+          filteredPosts.map((post) => (
+            <div key={post.id} className="min-w-0 pb-4">
+              <SocialPost post={post} role={role} avatarClass={avatarClass} />
+            </div>
+          ))
         ) : (
           <div className="col-span-full rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground shadow-soft">
             No hay publicaciones para este filtro.
